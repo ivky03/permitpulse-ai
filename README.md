@@ -4,14 +4,15 @@ PermitPulse AI estimates whether an NYC construction permit is likely to be
 issued before a project target date, retrieves comparable historical permits,
 and proposes an administratively valid next step for project-manager approval.
 
-## Current checkpoint: end-to-end v1
+## Current checkpoint: portfolio release v1
 
 Stage 0 established data viability and Stage 1 built the reproducible dataset.
 Stage 2 selected gradient boosting on a future-period test set. Stage 3 adds
 local sensitivity, comparable completed filings, and data-quality warnings.
 Stage 4 adds a LangGraph workflow that drafts a bounded checklist and pauses for
 human review. Stage 5 exposes the workflow through FastAPI, a Streamlit dashboard,
-Docker Compose, and CI.
+Docker Compose, and CI. Stage 6 adds durable checkpoints, workspace history, a
+human-approved PDF report, and a verified runtime-artifact bundle.
 
 ```mermaid
 flowchart TD
@@ -22,8 +23,8 @@ flowchart TD
     D --> E
     E --> F["Bounded plan draft"]
     F --> G{"Human review"}
-    G -->|Approve| H["Human follow-up"]
-    G -->|Reject| I["Stop"]
+    G -->|Approve| H["Generate PDF"]
+    G -->|Reject| I["Save rejection"]
 ```
 
 ## macOS + VS Code setup
@@ -73,6 +74,45 @@ Gemini is optional. Without an API key, the same workflow uses deterministic
 wording. To enable it, set `GOOGLE_API_KEY` in your shell or `.env` environment.
 Gemini can rewrite the summary only; the score, evidence, actions, and approval
 state remain controlled by code.
+
+Configuration is loaded automatically from the repository-root `.env` file; you
+do not need to source it manually before starting FastAPI or Streamlit.
+
+## Durable workspace history
+
+Enter a demo workspace ID in the Streamlit sidebar. It groups prior assessments,
+and clicking a history item reopens its result. LangGraph checkpoints and history
+are stored in `artifacts/permitpulse_state.sqlite`, so a pending approval can be
+resumed after FastAPI restarts.
+
+Workspace IDs are demo separation, not authentication. Do not enter private or
+sensitive project data. Use real authentication plus a shared database before any
+multi-user deployment.
+
+## Human-approved PDF
+
+The UI shows the risk, evidence, warnings, and checklist before the reviewer decides.
+Approval generates a polished PDF containing that reviewed context and exposes a
+workspace-scoped download button. Rejection records the decision and creates no PDF.
+Reports are stored under `artifacts/reports/`, which is covered by the same Docker
+volume as the SQLite checkpoint.
+
+See the committed [sample approved assessment](output/pdf/permitpulse-sample-assessment.pdf)
+for the exact report a reviewer receives.
+
+## Reviewer quick-start artifacts
+
+Runtime artifacts are intentionally excluded from Git. Build the release archive:
+
+```bash
+python scripts/manage_demo_artifacts.py build permitpulse-demo-artifacts.tar.gz
+```
+
+Attach it to a GitHub Release. A reviewer can download it and run:
+
+```bash
+python scripts/manage_demo_artifacts.py install permitpulse-demo-artifacts.tar.gz
+```
 
 Docker is also supported after local artifacts have been generated:
 
@@ -133,9 +173,9 @@ professional or DOB examiner.
 - The LLM never calculates or changes the risk score.
 - LangGraph pauses before finalization and requires `approve` or `reject` on the
   same thread.
-- Approval means “approved for human follow-up”; the system sends nothing and
-  changes no schedule automatically.
-- The current in-memory checkpointer is intentionally local-demo scope. A durable
-  shared checkpointer is required before multi-instance production deployment.
+- Approval authorizes only a downloadable PDF from the displayed assessment; the
+  system never contacts DOB or changes a project schedule automatically.
+- A durable SQLite checkpointer supports restart recovery for this single-instance demo. A
+  durable shared checkpointer is still required for multi-instance deployment.
 - See `reports/project_guide.md` for a plain-English walkthrough and
-  `reports/stage4_product.md` for the workflow contract.
+  `reports/stage6_portfolio.md` for the final persistence and PDF boundaries.

@@ -1,4 +1,4 @@
-.PHONY: setup test dataset train index demo api ui
+.PHONY: setup test dataset train index demo bundle api ui
 
 setup:
 	python3 -m venv .venv
@@ -19,6 +19,9 @@ index:
 
 demo:
 	python -m src.services.demo
+
+bundle:
+	python scripts/manage_demo_artifacts.py build permitpulse-demo-artifacts.tar.gz
 
 api:
 	python -m uvicorn src.api.app:app --reload

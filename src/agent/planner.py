@@ -6,6 +6,11 @@ import json
 import os
 from typing import Any
 
+from dotenv import load_dotenv
+
+
+load_dotenv()
+
 
 def deterministic_plan(assessment: dict[str, Any]) -> dict[str, Any]:
     prediction = assessment["prediction"]

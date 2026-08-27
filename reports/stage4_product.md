@@ -1,5 +1,8 @@
 # Stage 4: controlled workflow and product shell
 
+> Historical checkpoint: Stage 6 supersedes the in-memory limitation described below
+> with durable SQLite state and an explicitly approved PDF report.
+
 ## Outcome
 
 PermitPulse now runs from filing-time inputs through prediction, comparable-case

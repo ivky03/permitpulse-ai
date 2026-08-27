@@ -31,6 +31,14 @@ class Stage3EvidenceTests(unittest.TestCase):
                 ["borough"],
             )
 
+    def test_binary_categories_are_normalized_to_training_case(self) -> None:
+        prepared = prepare_input(
+            {"plumbing_work_type": "Yes"},
+            ["plumbing_work_type"],
+            {"reference_values": {"plumbing_work_type": "NO"}},
+        )
+        self.assertEqual(prepared.iloc[0]["plumbing_work_type"], "YES")
+
     def test_local_sensitivity_reports_direction(self) -> None:
         prepared = pd.DataFrame([{"initial_cost": 800.0}])
         factors = local_sensitivity(

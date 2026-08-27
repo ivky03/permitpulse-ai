@@ -34,7 +34,10 @@ def coerce_to_reference(value: Any, reference: Any) -> Any:
         except (TypeError, ValueError):
             return value
     if isinstance(reference, str):
-        return str(value)
+        text = str(value).strip()
+        if reference in {"YES", "NO"} and text.upper() in {"YES", "NO"}:
+            return text.upper()
+        return text
     return value
 
 

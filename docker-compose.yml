@@ -7,8 +7,10 @@ services:
     environment:
       GOOGLE_API_KEY: ${GOOGLE_API_KEY:-}
       GEMINI_MODEL: ${GEMINI_MODEL:-gemini-2.5-flash}
+      PERMITPULSE_STATE_DB: /app/artifacts/permitpulse_state.sqlite
+      PERMITPULSE_REPORT_DIR: /app/artifacts/reports
     volumes:
-      - ./artifacts:/app/artifacts:ro
+      - ./artifacts:/app/artifacts
     healthcheck:
       test:
         - CMD

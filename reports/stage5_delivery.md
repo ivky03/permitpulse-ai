@@ -1,5 +1,8 @@
 # Stage 5: delivery checkpoint
 
+> Historical checkpoint: see `stage6_portfolio.md` for the current persistence,
+> history, artifact-release, and PDF behavior.
+
 The end-to-end portfolio version is locally runnable and covered by CI.
 
 ## Included

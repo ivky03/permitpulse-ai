@@ -52,10 +52,11 @@ later enhancement after the end-to-end product works.
 4. DuckDB retrieves similar completed filings and summarizes their actual timing.
 5. Code creates a bounded project-manager checklist; Gemini may optionally rewrite its
    summary without changing facts.
-6. LangGraph pauses. A human approves or rejects the checklist.
+6. LangGraph pauses. A human reviews the result and approves or rejects it.
 
-“Approved” does not mean DOB approval. It means a person approved the proposed internal
-follow-up. The app has no tool that submits a filing, emails anyone, or edits a schedule.
+“Approved” does not mean DOB approval. It means a person approved the displayed
+assessment for a downloadable PDF report. Rejection creates no report. The app has no
+tool that submits a filing, contacts DOB, sends a message, or edits a schedule.
 
 ## 5. Why this is relevant to Procore
 
@@ -89,5 +90,5 @@ and comparable cases, and show that the workflow cannot finish until you approve
 reject it.
 
 The next enhancement backlog is intentionally separate: calibrate/retune the threshold,
-try stronger tabular models, add subgroup monitoring, use a durable checkpointer and
-authentication, then deploy with observability.
+try stronger tabular models, add subgroup monitoring, add real authentication and a
+shared production database, then deploy with observability.
