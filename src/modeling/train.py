@@ -22,6 +22,7 @@ from src.data.build_dataset import LEAKAGE_FIELDS, MODEL_FEATURES, NUMERIC_FEATU
 
 from .baseline import HistoricalRateBaseline
 from .evaluation import choose_threshold, classification_metrics
+from .profile import build_input_profile
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -313,6 +314,7 @@ def run(data_path: Path, observation_date: date) -> dict[str, Any]:
         }
         for name, split in splits.items()
     }
+    input_profile = build_input_profile(splits["train"], categorical, numeric)
     output = {
         "target": "delay_over_30_days",
         "observation_date": observation_date.isoformat(),
@@ -339,8 +341,14 @@ def run(data_path: Path, observation_date: date) -> dict[str, Any]:
         "model_name": winner,
         "threshold": results[winner]["threshold"],
         "selected_features": selected,
+        "categorical_features": categorical,
+        "numeric_features": numeric,
+        "input_profile": input_profile,
         "target": output["target"],
         "observation_date": output["observation_date"],
+        "training_period": split_summary["train"],
+        "validation_period": split_summary["validation"],
+        "test_period": split_summary["test"],
     }
     joblib.dump(artifact, ROOT / "artifacts" / "permit_delay_model.joblib")
     (ROOT / "artifacts" / "model_metadata.json").write_text(
