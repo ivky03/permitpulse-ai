@@ -1,0 +1,578 @@
+{
+  "dataset_id": "ic3t-wcy2",
+  "name": "DOB Job Application Filings",
+  "description": "This dataset contains all job applications submitted through the Borough Offices, through eFiling, or through the HUB, which have a \"Latest Action Date\" since January 1, 2000. This dataset does not include jobs submitted through DOB NOW. See the <a href=\"https://data.cityofnewyork.us/d/w9ak-ipjd\" target=\"_blank\" rel=\"noreferrer\"\n>DOB NOW: Build \u2013 Job Application Filings</a> dataset for DOB NOW jobs.",
+  "rows_updated_at": 1787694020,
+  "columns": [
+    {
+      "name": "JOB_S1_NO",
+      "field_name": "job_s1_no",
+      "type": "text",
+      "description": "JOB_S1_NO"
+    },
+    {
+      "name": "Job #",
+      "field_name": "job__",
+      "type": "text",
+      "description": "Number assigned by DOB to Job Filing"
+    },
+    {
+      "name": "Doc #",
+      "field_name": "doc__",
+      "type": "text",
+      "description": "Document Number"
+    },
+    {
+      "name": "Borough",
+      "field_name": "borough",
+      "type": "text",
+      "description": "1= Manhattan, 2= Bronx, 3 = Brooklyn, 4 = Queens, 5 = Staten Island"
+    },
+    {
+      "name": "House #",
+      "field_name": "house__",
+      "type": "text",
+      "description": "House Number of Residence or Commercial Property"
+    },
+    {
+      "name": "Street Name",
+      "field_name": "street_name",
+      "type": "text",
+      "description": "Street Name where Property is located"
+    },
+    {
+      "name": "Block",
+      "field_name": "block",
+      "type": "text",
+      "description": "Tax block assigned by Department of Finance"
+    },
+    {
+      "name": "Lot",
+      "field_name": "lot",
+      "type": "text",
+      "description": "Tax lot assigned by Department of Finance"
+    },
+    {
+      "name": "Bin #",
+      "field_name": "bin__",
+      "type": "text",
+      "description": "Number assigned by City Planning to a specific building"
+    },
+    {
+      "name": "TOTAL_CONSTRUCTION_FLOOR_AREA",
+      "field_name": "total_construction_floor_area",
+      "type": "text",
+      "description": "Total  Construction Floor Area"
+    },
+    {
+      "name": "Job Type",
+      "field_name": "job_type",
+      "type": "text",
+      "description": "Job Type, based on DOB Job Code (NB-New Building, A1, A2, A3- Alterations 1-3, SG-Sign, etc.)"
+    },
+    {
+      "name": "Job Status",
+      "field_name": "job_status",
+      "type": "text",
+      "description": "DOB Status code of job (A-Pre Filed, I-Sign Off, P- Approved, R-Permit Entire) Complete List - http://www.nyc.gov/html/dob/downloads/pdf/bisjobstatus.pdf"
+    },
+    {
+      "name": "Job Status Descrp",
+      "field_name": "job_status_descrp",
+      "type": "text",
+      "description": "Status code description"
+    },
+    {
+      "name": "Latest Action Date",
+      "field_name": "latest_action_date",
+      "type": "text",
+      "description": "Latest status date"
+    },
+    {
+      "name": "Building Type",
+      "field_name": "building_type",
+      "type": "text",
+      "description": "1-2-3 Family  or Other"
+    },
+    {
+      "name": "Community - Board",
+      "field_name": "community___board",
+      "type": "text",
+      "description": "3-digit identifier: Borough code = first position, last 2 = community board"
+    },
+    {
+      "name": "Cluster",
+      "field_name": "cluster",
+      "type": "text",
+      "description": "Cluster"
+    },
+    {
+      "name": "Landmarked",
+      "field_name": "landmarked",
+      "type": "text",
+      "description": "L code indicates that the building has been assigned landmark status"
+    },
+    {
+      "name": "Adult Estab",
+      "field_name": "adult_estab",
+      "type": "text",
+      "description": "Adult Estab"
+    },
+    {
+      "name": "Loft Board",
+      "field_name": "loft_board",
+      "type": "text",
+      "description": "Loft Board"
+    },
+    {
+      "name": "City Owned",
+      "field_name": "city_owned",
+      "type": "text",
+      "description": "City Owned"
+    },
+    {
+      "name": "Little e",
+      "field_name": "little_e",
+      "type": "text",
+      "description": "Hazardous"
+    },
+    {
+      "name": "PC Filed",
+      "field_name": "pc_filed",
+      "type": "text",
+      "description": "Application Filed electronically, rather than manually"
+    },
+    {
+      "name": "eFiling Filed",
+      "field_name": "efiling_filed",
+      "type": "text",
+      "description": "Application Filed electronically, rather than manually"
+    },
+    {
+      "name": "Plumbing",
+      "field_name": "plumbing",
+      "type": "text",
+      "description": "Plumbing Work Type? (X=Yes, Blank=No)"
+    },
+    {
+      "name": "Mechanical",
+      "field_name": "mechanical",
+      "type": "text",
+      "description": "Mechanical  Work Type? (X=Yes, Blank=No)"
+    },
+    {
+      "name": "Boiler",
+      "field_name": "boiler",
+      "type": "text",
+      "description": "Boiler  Work Type? (X=Yes, Blank=No)"
+    },
+    {
+      "name": "Fuel Burning",
+      "field_name": "fuel_burning",
+      "type": "text",
+      "description": "Fuel Burning  Work Type? (X=Yes, Blank=No)"
+    },
+    {
+      "name": "Fuel Storage",
+      "field_name": "fuel_storage",
+      "type": "text",
+      "description": "Fuel Storage  Work Type? (X=Yes, Blank=No)"
+    },
+    {
+      "name": "Standpipe",
+      "field_name": "standpipe",
+      "type": "text",
+      "description": "Standpipe Work Type? (X=Yes, Blank=No)"
+    },
+    {
+      "name": "Sprinkler",
+      "field_name": "sprinkler",
+      "type": "text",
+      "description": "Sprinkler  Work Type? (X=Yes, Blank=No)"
+    },
+    {
+      "name": "Fire Alarm",
+      "field_name": "fire_alarm",
+      "type": "text",
+      "description": "Fire Alarm  Work Type? (X=Yes, Blank=No)"
+    },
+    {
+      "name": "Equipment",
+      "field_name": "equipment",
+      "type": "text",
+      "description": "Equipment  Work Type? (X=Yes, Blank=No)"
+    },
+    {
+      "name": "Fire Suppression",
+      "field_name": "fire_suppression",
+      "type": "text",
+      "description": "Fire Suppression  Work Type? (X=Yes, Blank=No)"
+    },
+    {
+      "name": "Curb Cut",
+      "field_name": "curb_cut",
+      "type": "text",
+      "description": "Curb Cut  Work Type? (X=Yes, Blank=No)"
+    },
+    {
+      "name": "Other",
+      "field_name": "other",
+      "type": "text",
+      "description": "Other? (X=Yes, Blank=No)"
+    },
+    {
+      "name": "Other Description",
+      "field_name": "other_description",
+      "type": "text",
+      "description": "Other Description"
+    },
+    {
+      "name": "WITHDRAWAL_FLAG",
+      "field_name": "withdrawal_flag",
+      "type": "text",
+      "description": "Withdrawal Indicator"
+    },
+    {
+      "name": "Applicant's First Name",
+      "field_name": "applicant_s_first_name",
+      "type": "text",
+      "description": "First Name of Applicant"
+    },
+    {
+      "name": "Applicant's Last Name",
+      "field_name": "applicant_s_last_name",
+      "type": "text",
+      "description": "Last Name of Applicant"
+    },
+    {
+      "name": "Applicant Professional Title",
+      "field_name": "applicant_professional_title",
+      "type": "text",
+      "description": "Applicant's Professional Title"
+    },
+    {
+      "name": "Applicant License #",
+      "field_name": "applicant_license__",
+      "type": "text",
+      "description": "Number assigned to the skilled trade person/contractor or licensed professional"
+    },
+    {
+      "name": "Professional Cert",
+      "field_name": "professional_cert",
+      "type": "text",
+      "description": "Job is Professionally Certified by Licensed Professional instead of having it reviewed by Department of Building's Plan Examiners"
+    },
+    {
+      "name": "Pre- Filing Date",
+      "field_name": "pre__filing_date",
+      "type": "text",
+      "description": "Date when job is prefiled"
+    },
+    {
+      "name": "Paid",
+      "field_name": "paid",
+      "type": "text",
+      "description": "Date when job is paid"
+    },
+    {
+      "name": "Fully Paid",
+      "field_name": "fully_paid",
+      "type": "text",
+      "description": "Date when job is paid and entered"
+    },
+    {
+      "name": "Assigned",
+      "field_name": "assigned",
+      "type": "text",
+      "description": "Date when job is assigned to plan examiner"
+    },
+    {
+      "name": "Approved",
+      "field_name": "approved",
+      "type": "text",
+      "description": "Date when job is approved"
+    },
+    {
+      "name": "Fully Permitted",
+      "field_name": "fully_permitted",
+      "type": "text",
+      "description": "Date when job is fully permitted"
+    },
+    {
+      "name": "SIGNOFF_DATE",
+      "field_name": "signoff_date",
+      "type": "text",
+      "description": "Sign-off Date"
+    },
+    {
+      "name": "SPECIAL_ACTION_STATUS",
+      "field_name": "special_action_status",
+      "type": "text",
+      "description": "Special Action Status"
+    },
+    {
+      "name": "SPECIAL_ACTION_DATE",
+      "field_name": "special_action_date",
+      "type": "text",
+      "description": "Special Action Date"
+    },
+    {
+      "name": "Initial Cost",
+      "field_name": "initial_cost",
+      "type": "text",
+      "description": " Estimated cost of job"
+    },
+    {
+      "name": "Total Est. Fee",
+      "field_name": "total_est__fee",
+      "type": "text",
+      "description": "Estimated fee of job"
+    },
+    {
+      "name": "Fee Status",
+      "field_name": "fee_status",
+      "type": "text",
+      "description": "Type of Fee"
+    },
+    {
+      "name": "Existing Zoning Sqft",
+      "field_name": "existing_zoning_sqft",
+      "type": "number",
+      "description": "Existing Zoning Sqft"
+    },
+    {
+      "name": "Proposed Zoning Sqft",
+      "field_name": "proposed_zoning_sqft",
+      "type": "number",
+      "description": "Proposed Zoning Sqft"
+    },
+    {
+      "name": "Horizontal Enlrgmt",
+      "field_name": "horizontal_enlrgmt",
+      "type": "text",
+      "description": "Horizontal Enlrgmt"
+    },
+    {
+      "name": "Vertical Enlrgmt",
+      "field_name": "vertical_enlrgmt",
+      "type": "text",
+      "description": "Vertical Enlrgmt"
+    },
+    {
+      "name": "Enlargement SQ Footage",
+      "field_name": "enlargement_sq_footage",
+      "type": "number",
+      "description": "Enlargement SQ Footage"
+    },
+    {
+      "name": "Street Frontage",
+      "field_name": "street_frontage",
+      "type": "number",
+      "description": "Street Frontage"
+    },
+    {
+      "name": "ExistingNo. of Stories",
+      "field_name": "existingno_of_stories",
+      "type": "number",
+      "description": "ExistingNo. of Stories"
+    },
+    {
+      "name": "Proposed No. of Stories",
+      "field_name": "proposed_no_of_stories",
+      "type": "number",
+      "description": "Proposed No. of Stories"
+    },
+    {
+      "name": "Existing Height",
+      "field_name": "existing_height",
+      "type": "number",
+      "description": "Existing Height"
+    },
+    {
+      "name": "Proposed Height",
+      "field_name": "proposed_height",
+      "type": "number",
+      "description": "Proposed Height"
+    },
+    {
+      "name": "Existing Dwelling Units",
+      "field_name": "existing_dwelling_units",
+      "type": "text",
+      "description": "Existing Dwelling Units"
+    },
+    {
+      "name": "Proposed Dwelling Units",
+      "field_name": "proposed_dwelling_units",
+      "type": "text",
+      "description": "Proposed Dwelling Units"
+    },
+    {
+      "name": "Existing Occupancy",
+      "field_name": "existing_occupancy",
+      "type": "text",
+      "description": "Existing Occupancy"
+    },
+    {
+      "name": "Proposed Occupancy",
+      "field_name": "proposed_occupancy",
+      "type": "text",
+      "description": "Proposed Occupancy"
+    },
+    {
+      "name": "Site Fill",
+      "field_name": "site_fill",
+      "type": "text",
+      "description": "Site Fill"
+    },
+    {
+      "name": "Zoning Dist1",
+      "field_name": "zoning_dist1",
+      "type": "text",
+      "description": "Zoning Distr 1"
+    },
+    {
+      "name": "Zoning Dist2",
+      "field_name": "zoning_dist2",
+      "type": "text",
+      "description": "Zoning Distr 2"
+    },
+    {
+      "name": "Zoning Dist3",
+      "field_name": "zoning_dist3",
+      "type": "text",
+      "description": "Zoning Distr 3"
+    },
+    {
+      "name": "Special District 1",
+      "field_name": "special_district_1",
+      "type": "text",
+      "description": "Special Distr 1"
+    },
+    {
+      "name": "Special District 2",
+      "field_name": "special_district_2",
+      "type": "text",
+      "description": "Special District 2"
+    },
+    {
+      "name": "Owner Type",
+      "field_name": "owner_type",
+      "type": "text",
+      "description": "Owner Type"
+    },
+    {
+      "name": "Non-Profit",
+      "field_name": "non_profit",
+      "type": "text",
+      "description": "Non-Profit"
+    },
+    {
+      "name": "Owner's First Name",
+      "field_name": "owner_s_first_name",
+      "type": "text",
+      "description": "First Name of property owner"
+    },
+    {
+      "name": "Owner's Last Name",
+      "field_name": "owner_s_last_name",
+      "type": "text",
+      "description": "Last Name of property owner"
+    },
+    {
+      "name": "Owner's Business Name",
+      "field_name": "owner_s_business_name",
+      "type": "text",
+      "description": "Business Name of Property Owner"
+    },
+    {
+      "name": "Owner's House Number",
+      "field_name": "owner_s_house_number",
+      "type": "text",
+      "description": "House Number of Property Owner"
+    },
+    {
+      "name": "Owner'sHouse Street Name",
+      "field_name": "owner_shouse_street_name",
+      "type": "text",
+      "description": "House Street Name of Property Owner"
+    },
+    {
+      "name": "City ",
+      "field_name": "city_",
+      "type": "text",
+      "description": "City "
+    },
+    {
+      "name": "State",
+      "field_name": "state",
+      "type": "text",
+      "description": "State"
+    },
+    {
+      "name": "Zip",
+      "field_name": "zip",
+      "type": "text",
+      "description": "Zip"
+    },
+    {
+      "name": "BUILDING_CLASS",
+      "field_name": "building_class",
+      "type": "text",
+      "description": "Building Class"
+    },
+    {
+      "name": "Job Description",
+      "field_name": "job_description",
+      "type": "text",
+      "description": "Job Description"
+    },
+    {
+      "name": "JOB_NO_GOOD_COUNT",
+      "field_name": "job_no_good_count",
+      "type": "text",
+      "description": "Job No Good Count"
+    },
+    {
+      "name": "LATITUDE",
+      "field_name": "gis_latitude",
+      "type": "text",
+      "description": "Latitude"
+    },
+    {
+      "name": "LONGITUDE",
+      "field_name": "gis_longitude",
+      "type": "text",
+      "description": "Longitude"
+    },
+    {
+      "name": "COUNCIL DISTRICT",
+      "field_name": "gis_council_district",
+      "type": "text",
+      "description": "Council District"
+    },
+    {
+      "name": "CENSUS TRACT",
+      "field_name": "gis_census_tract",
+      "type": "text",
+      "description": "Census Tract"
+    },
+    {
+      "name": "NTA",
+      "field_name": "gis_nta_name",
+      "type": "text",
+      "description": "NTA Name"
+    },
+    {
+      "name": "BBL",
+      "field_name": "bbl",
+      "type": "text",
+      "description": "BIN"
+    },
+    {
+      "name": "DOBRunDate",
+      "field_name": "dobrundate",
+      "type": "calendar_date",
+      "description": "Date when query is run and pushed to Open Data. Could be used to differentiate report dates."
+    }
+  ]
+}

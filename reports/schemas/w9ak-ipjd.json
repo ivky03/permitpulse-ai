@@ -1,0 +1,578 @@
+{
+  "dataset_id": "w9ak-ipjd",
+  "name": "DOB NOW: Build \u2013 Job Application Filings",
+  "description": "List of most job filings filed in DOB NOW. This dataset does not include certain types of job.  For Electrical jobs, use https://data.cityofnewyork.us/browse?Data-Collection_Data-Collection=DOB+NOW+Electrical+Permits+Data. Elevator and LAA jobs will also be published separately.",
+  "rows_updated_at": 1787690244,
+  "columns": [
+    {
+      "name": "Job Filing Number",
+      "field_name": "job_filing_number",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Filing Status",
+      "field_name": "filing_status",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "House No",
+      "field_name": "house_no",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Street Name",
+      "field_name": "street_name",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Borough",
+      "field_name": "borough",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Block",
+      "field_name": "block",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "LOT",
+      "field_name": "lot",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Bin",
+      "field_name": "bin",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Commmunity - Board",
+      "field_name": "commmunity_board",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Work on Floor",
+      "field_name": "work_on_floor",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Apt./Condo No(s)",
+      "field_name": "apt_condo_no_s",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Applicant Professional Title",
+      "field_name": "applicant_professional_title",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Applicant License #",
+      "field_name": "applicant_license",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Applicant First Name",
+      "field_name": "applicant_first_name",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Applicants Middle Initial",
+      "field_name": "applicants_middle_initial",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Applicant Last Name",
+      "field_name": "applicant_last_name",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Owner's Business Name",
+      "field_name": "owner_s_business_name",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Applicant Street Name",
+      "field_name": "applicant_street_name",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Applicant City",
+      "field_name": "city",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Applicant State",
+      "field_name": "state",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Applicant Zip",
+      "field_name": "zip",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Filing Representative First Name",
+      "field_name": "filing_representative_first_name",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Filing Representative Middle Initial",
+      "field_name": "filing_representative_middle_initial",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Filing Representative Last Name",
+      "field_name": "filing_representative_last_name",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Filing Representative Business Name",
+      "field_name": "filing_representative_business_name",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Filing Representative Street Name",
+      "field_name": "filing_representative_street_name",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Filing Representative City",
+      "field_name": "filing_representative_city",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Filing Representative State",
+      "field_name": "filing_representative_state",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Filing Representative Zip",
+      "field_name": "filing_representative_zip",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Sprinkler (Work Type)",
+      "field_name": "sprinkler_work_type",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Plumbing (Work Type)",
+      "field_name": "plumbing_work_type",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Stand Pipe (Work Type)",
+      "field_name": "standpipe",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Antenna (Work Type)",
+      "field_name": "antenna",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Sign (Work Type)",
+      "field_name": "sign",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Curb Cut (Work Type)",
+      "field_name": "curb_cut",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Fence (Work Type)",
+      "field_name": "fence",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Scaffold (Work Type)",
+      "field_name": "scaffold",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Shed (Work Type)",
+      "field_name": "shed",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Initial Cost",
+      "field_name": "initial_cost",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Total Construction Floor Area",
+      "field_name": "total_construction_floor_area",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Review Building Code",
+      "field_name": "review_building_code",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Little E",
+      "field_name": "little_e",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Unmapped/CCO Street",
+      "field_name": "unmapped_cco_street",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Request Legalization",
+      "field_name": "request_legalization",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Includes Permanent Removal",
+      "field_name": "includes_permanent_removal",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "In Compliance with NYCECC",
+      "field_name": "in_compliance_with_nycecc",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Exempt from NYCECC",
+      "field_name": "exempt_from_nycecc",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Building Type",
+      "field_name": "building_type",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Existing Stories",
+      "field_name": "existing_stories",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Existing Height",
+      "field_name": "existing_height",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Existing Dwelling Units",
+      "field_name": "existing_dwelling_units",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Proposed No of Stories",
+      "field_name": "proposed_no_of_stories",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Proposed Height",
+      "field_name": "proposed_height",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Proposed Dwelling Units",
+      "field_name": "proposed_dwelling_units",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "SpecialInspectionRequirement",
+      "field_name": "specialinspectionrequirement",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Special Inspection Agency Number",
+      "field_name": "special_inspection_agency_number",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "ProgressInspectionRequirement",
+      "field_name": "progressinspectionrequirement",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Built 1 information value",
+      "field_name": "built_1_information_value",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Built 2 information value",
+      "field_name": "built_2_information_value",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Built 2 A information value",
+      "field_name": "built_2_a_information_value",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Built 2 B information value",
+      "field_name": "built_2_b_information_value",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Filing Date",
+      "field_name": "filing_date",
+      "type": "calendar_date",
+      "description": ""
+    },
+    {
+      "name": "Current Status Date",
+      "field_name": "current_status_date",
+      "type": "calendar_date",
+      "description": ""
+    },
+    {
+      "name": "First Permit Date",
+      "field_name": "first_permit_date",
+      "type": "calendar_date",
+      "description": ""
+    },
+    {
+      "name": "Boiler Equipment (Work Type)",
+      "field_name": "boiler_equipment_work_type_",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Earth Work (Work Type)",
+      "field_name": "earth_work_work_type_",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Foundation (Work Type)",
+      "field_name": "foundation_work_type_",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "General Construction (Work Type)",
+      "field_name": "general_construction_work_type_",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Mechanical Systems (Work Type)",
+      "field_name": "mechanical_systems_work_type_",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Place of Assembly (Work Type)",
+      "field_name": "place_of_assembly_work_type_",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Protection Mechanical Methods (Work Type)",
+      "field_name": "protection_mechanical_methods_work_type_",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Sidewalk Shed (Work Type)",
+      "field_name": "sidewalk_shed_work_type_",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Structural (Work Type)",
+      "field_name": "structural_work_type_",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Support of Excavation (Work Type)",
+      "field_name": "support_of_excavation_work_type_",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Temporary Place of Assembly (Work Type)",
+      "field_name": "temporary_place_of_assembly_work_type_",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Green Roof (Work Type)",
+      "field_name": "green_roof_work_type_",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Solar (Work Type)",
+      "field_name": "solar_work_type_",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Full Demolition (Work Type) ",
+      "field_name": "full_demolition_work_type_",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Suspended Scaffold (Work Type)",
+      "field_name": "suspended_scaffold_work_type_",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Job Type",
+      "field_name": "job_type",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Latitude",
+      "field_name": "latitude",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Longitude",
+      "field_name": "longitude",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Postcode",
+      "field_name": "postcode",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Council District",
+      "field_name": "council_district",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Census Tract",
+      "field_name": "census_tract",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "BBL",
+      "field_name": "bbl",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "NTA",
+      "field_name": "nta",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Approved Date",
+      "field_name": "approved_date",
+      "type": "calendar_date",
+      "description": ""
+    },
+    {
+      "name": "Signoff Date",
+      "field_name": "signoff_date",
+      "type": "calendar_date",
+      "description": ""
+    },
+    {
+      "name": "Applicant Business Name",
+      "field_name": "applicant_business_name",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Owner First Name",
+      "field_name": "owner_first_name",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Owner Last Name",
+      "field_name": "owner_last_name",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Owner Type",
+      "field_name": "owner_type",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Job Description",
+      "field_name": "job_description",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Filing Review Type",
+      "field_name": "filing_review_type",
+      "type": "text",
+      "description": ""
+    }
+  ]
+}

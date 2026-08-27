@@ -1,0 +1,284 @@
+{
+  "dataset_id": "rbx6-tga4",
+  "name": "DOB NOW: Build \u2013 Approved Permits",
+  "description": "List of all approved construction permits in DOB NOW except for <a href=\"https://data.cityofnewyork.us/City-Government/DOB-NOW-Electrical-Permit-Applications/dm9a-ab7w\">Electrical</a>, <a href=\"https://data.cityofnewyork.us/Housing-Development/DOB-NOW-Build-Elevator-Permit-Applications/kfp4-dz4h\">Elevator</a>, and <a href=\"https://data.cityofnewyork.us/Housing-Development/DOB-NOW-Build-Limited-Alteration-Applications/xxbr-ypig\">Limited Alteration Application (LAA)</a> which have their own datasets.",
+  "rows_updated_at": 1787683297,
+  "columns": [
+    {
+      "name": "Job Filing Number",
+      "field_name": "job_filing_number",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Work Permit",
+      "field_name": "work_permit",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Sequence Number",
+      "field_name": "sequence_number",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Filing Reason",
+      "field_name": "filing_reason",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "House No",
+      "field_name": "house_no",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Street Name",
+      "field_name": "street_name",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Borough",
+      "field_name": "borough",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "LOT",
+      "field_name": "lot",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Bin",
+      "field_name": "bin",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Block",
+      "field_name": "block",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "C B NO",
+      "field_name": "c_b_no",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Apt/Condo No(s)",
+      "field_name": "apt_condo_no_s",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Work on Floor",
+      "field_name": "work_on_floor",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Work Type",
+      "field_name": "work_type",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Permittee's License Type",
+      "field_name": "permittee_s_license_type",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Applicant License #",
+      "field_name": "applicant_license",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Applicant First Name",
+      "field_name": "applicant_first_name",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Applicant Middle Name",
+      "field_name": "applicant_middle_name",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Applicant Last Name",
+      "field_name": "applicant_last_name",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Applicant Business Name",
+      "field_name": "applicant_business_name",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Applicant Business Address",
+      "field_name": "applicant_business_address",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Filing Representative First Name",
+      "field_name": "filing_representative_first_name",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Filing Representative Middle Initial",
+      "field_name": "filing_representative_middle_initial",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Filing Representative Last Name",
+      "field_name": "filing_representative_last_name",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Filing Representative Business Name",
+      "field_name": "filing_representative_business_name",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Approved Date",
+      "field_name": "approved_date",
+      "type": "calendar_date",
+      "description": ""
+    },
+    {
+      "name": "Issued Date",
+      "field_name": "issued_date",
+      "type": "calendar_date",
+      "description": ""
+    },
+    {
+      "name": "Expired Date",
+      "field_name": "expired_date",
+      "type": "calendar_date",
+      "description": ""
+    },
+    {
+      "name": "Job Description",
+      "field_name": "job_description",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Estimated Job Costs",
+      "field_name": "estimated_job_costs",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Owner Business Name",
+      "field_name": "owner_business_name",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Owner Name",
+      "field_name": "owner_name",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Owner Street Address",
+      "field_name": "owner_street_address",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Owner City",
+      "field_name": "owner_city",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Owner State",
+      "field_name": "owner_state",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Owner Zip Code",
+      "field_name": "owner_zip_code",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Permit Status",
+      "field_name": "permit_status",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Tracking Number",
+      "field_name": "tracking_number",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Zip Code",
+      "field_name": "zip_code",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "Latitude",
+      "field_name": "latitude",
+      "type": "number",
+      "description": ""
+    },
+    {
+      "name": "Longitude",
+      "field_name": "longitude",
+      "type": "number",
+      "description": ""
+    },
+    {
+      "name": "Community Board",
+      "field_name": "community_board",
+      "type": "number",
+      "description": ""
+    },
+    {
+      "name": "Council District",
+      "field_name": "council_district",
+      "type": "number",
+      "description": ""
+    },
+    {
+      "name": "BBL",
+      "field_name": "bbl",
+      "type": "number",
+      "description": ""
+    },
+    {
+      "name": "Census Tract (2020)",
+      "field_name": "census_tract",
+      "type": "number",
+      "description": ""
+    },
+    {
+      "name": "Neighborhood Tabulation Area (NTA) (2020)",
+      "field_name": "nta",
+      "type": "text",
+      "description": ""
+    }
+  ]
+}

@@ -1,0 +1,368 @@
+{
+  "dataset_id": "ipu4-2q9a",
+  "name": "DOB Permit Issuance",
+  "description": "The Department of Buildings (DOB) issues permits for construction and demolition activities in the City of New York. The construction industry must submit an application to DOB with details of the construction job they would like to complete. The primary types of application, aka job type, are: New Building, Demolition, and Alterations Type 1, 2, and 3. Each job type can have multiple work types, such as general construction, boiler, elevator, and plumbing. Each work type will receive a separate permit. (See the DOB Job Application Filings dataset for information about each job application.) Each row/record in this dataset represents the life cycle of one permit for one work type. The dataset is updated daily with new records, and each existing record will be updated as the permit application moves through the approval process to reflect the latest status of the application.\n<b> Note: This dataset only includes permits issued in the Buildings Information System (BIS), most current permits are now issued in DOB NOW -- see the <a href =\"https://data.cityofnewyork.us/Housing-Development/DOB-NOW-Build-Approved-Permits/rbx6-tga4/about_data\">DOB NOW: Build \u2013 Approved Permits</a> dataset.</b>",
+  "rows_updated_at": 1787702050,
+  "columns": [
+    {
+      "name": "BOROUGH",
+      "field_name": "borough",
+      "type": "text",
+      "description": "1= Manhattan, 2= Bronx, 3 = Brooklyn, 4 = Queens, 5 = Staten Island"
+    },
+    {
+      "name": "Bin #",
+      "field_name": "bin__",
+      "type": "text",
+      "description": "Number assigned by City Planning to a specific building"
+    },
+    {
+      "name": "House #",
+      "field_name": "house__",
+      "type": "text",
+      "description": "House Number of Residence or Commercial Property"
+    },
+    {
+      "name": "Street Name",
+      "field_name": "street_name",
+      "type": "text",
+      "description": "Street Name where Property is located"
+    },
+    {
+      "name": "Job #",
+      "field_name": "job__",
+      "type": "text",
+      "description": "Number assigned by DOB to Job Filing"
+    },
+    {
+      "name": "Job doc. #",
+      "field_name": "job_doc___",
+      "type": "text",
+      "description": "Document Number"
+    },
+    {
+      "name": "Job Type",
+      "field_name": "job_type",
+      "type": "text",
+      "description": "Job Type, based on DOB Job Code (NB-New Building, A1, A2, A3- Alterations 1-3, SG-Sign, etc.)"
+    },
+    {
+      "name": "Self_Cert",
+      "field_name": "self_cert",
+      "type": "text",
+      "description": "Self_Cert"
+    },
+    {
+      "name": "Block",
+      "field_name": "block",
+      "type": "text",
+      "description": "Tax block assigned by Department of Finance"
+    },
+    {
+      "name": "Lot",
+      "field_name": "lot",
+      "type": "text",
+      "description": "Tax lot assigned by Department of Finance"
+    },
+    {
+      "name": "Community Board",
+      "field_name": "community_board",
+      "type": "text",
+      "description": "3-digit identifier: Borough code = first position, last 2 = community board"
+    },
+    {
+      "name": "Zip Code",
+      "field_name": "zip_code",
+      "type": "text",
+      "description": "Tax lot Zip Code"
+    },
+    {
+      "name": "Bldg Type",
+      "field_name": "bldg_type",
+      "type": "text",
+      "description": "1-2-3 Family  or Other"
+    },
+    {
+      "name": "Residential",
+      "field_name": "residential",
+      "type": "text",
+      "description": "Residential"
+    },
+    {
+      "name": "Special District 1",
+      "field_name": "special_district_1",
+      "type": "text",
+      "description": "Special District 1"
+    },
+    {
+      "name": "Special District 2",
+      "field_name": "special_district_2",
+      "type": "text",
+      "description": "Special District 2"
+    },
+    {
+      "name": "Work Type",
+      "field_name": "work_type",
+      "type": "text",
+      "description": "DOB Designated Work Types (PL-Plumbing,  BL-Boiler, MH-Mechanical, OT-Other Constuction Equipment, etc.)"
+    },
+    {
+      "name": "Permit Status",
+      "field_name": "permit_status",
+      "type": "text",
+      "description": "Permit Status"
+    },
+    {
+      "name": "Filing Status",
+      "field_name": "filing_status",
+      "type": "text",
+      "description": "Filing Status"
+    },
+    {
+      "name": "Permit Type",
+      "field_name": "permit_type",
+      "type": "text",
+      "description": "Permit Type (DM-Demolition, EW-Equipment Work, PL-Plumbing, etc.)  Complete List - http://www.nyc.gov/html/dob/downloads/pdf/bisjobstatus.pdf"
+    },
+    {
+      "name": "Permit Sequence #",
+      "field_name": "permit_sequence__",
+      "type": "text",
+      "description": "Permit Sequence #"
+    },
+    {
+      "name": "Permit Subtype",
+      "field_name": "permit_subtype",
+      "type": "text",
+      "description": "Permit Subtype (Subset of Equipment Work Permit Type-- BL-Boiler, FA- Fire Alarm, Subset of Construction Equipment Permit Type-- CH-Chute, SF-Scaffold, etc.) Complete List - http://www.nyc.gov/html/dob/downloads/pdf/bisjobstatus.pdf"
+    },
+    {
+      "name": "Oil Gas",
+      "field_name": "oil_gas",
+      "type": "text",
+      "description": "Oil Gas"
+    },
+    {
+      "name": "Site Fill",
+      "field_name": "site_fill",
+      "type": "text",
+      "description": "Site Fill"
+    },
+    {
+      "name": "Filing Date",
+      "field_name": "filing_date",
+      "type": "text",
+      "description": "Filing Date"
+    },
+    {
+      "name": "Issuance Date",
+      "field_name": "issuance_date",
+      "type": "text",
+      "description": "Issuance Date"
+    },
+    {
+      "name": "Expiration Date",
+      "field_name": "expiration_date",
+      "type": "text",
+      "description": "Expiration Date"
+    },
+    {
+      "name": "Job Start Date",
+      "field_name": "job_start_date",
+      "type": "text",
+      "description": "Job Start Date"
+    },
+    {
+      "name": "Permittee's First Name",
+      "field_name": "permittee_s_first_name",
+      "type": "text",
+      "description": "Permittee's First Name"
+    },
+    {
+      "name": "Permittee's Last Name",
+      "field_name": "permittee_s_last_name",
+      "type": "text",
+      "description": "Permittee's Last Name"
+    },
+    {
+      "name": "Permittee's Business Name",
+      "field_name": "permittee_s_business_name",
+      "type": "text",
+      "description": "Permittee's Business Name"
+    },
+    {
+      "name": "Permittee's Phone #",
+      "field_name": "permittee_s_phone__",
+      "type": "text",
+      "description": "Permittee's Phone #"
+    },
+    {
+      "name": "Permittee's License Type",
+      "field_name": "permittee_s_license_type",
+      "type": "text",
+      "description": "Permittee's License Type"
+    },
+    {
+      "name": "Permittee's License #",
+      "field_name": "permittee_s_license__",
+      "type": "text",
+      "description": "Permittee's License #"
+    },
+    {
+      "name": "Act as Superintendent",
+      "field_name": "act_as_superintendent",
+      "type": "text",
+      "description": "Permittee Acts as Superintendent"
+    },
+    {
+      "name": "Permittee's Other Title",
+      "field_name": "permittee_s_other_title",
+      "type": "text",
+      "description": "Permittee's Other Title"
+    },
+    {
+      "name": "HIC License",
+      "field_name": "hic_license",
+      "type": "text",
+      "description": "HIC License"
+    },
+    {
+      "name": "Site Safety Mgr's First Name",
+      "field_name": "site_safety_mgr_s_first_name",
+      "type": "text",
+      "description": "Site Safety Mgr's First Name"
+    },
+    {
+      "name": "Site Safety Mgr's Last Name",
+      "field_name": "site_safety_mgr_s_last_name",
+      "type": "text",
+      "description": "Site Safety Mgr's Last Name"
+    },
+    {
+      "name": "Site Safety Mgr Business Name",
+      "field_name": "site_safety_mgr_business_name",
+      "type": "text",
+      "description": "Site Safety Mgr Business Name"
+    },
+    {
+      "name": "Superintendent First & Last Name",
+      "field_name": "superintendent_first___last_name",
+      "type": "text",
+      "description": "Superintendent First & Last Name"
+    },
+    {
+      "name": "Superintendent Business Name",
+      "field_name": "superintendent_business_name",
+      "type": "text",
+      "description": "Superintendent Business Name"
+    },
+    {
+      "name": "Owner's Business Type",
+      "field_name": "owner_s_business_type",
+      "type": "text",
+      "description": "Owner's Business Type"
+    },
+    {
+      "name": "Non-Profit",
+      "field_name": "non_profit",
+      "type": "text",
+      "description": "Non-Profit"
+    },
+    {
+      "name": "Owner's Business Name",
+      "field_name": "owner_s_business_name",
+      "type": "text",
+      "description": "Business Name of Property Owner"
+    },
+    {
+      "name": "Owner's First Name",
+      "field_name": "owner_s_first_name",
+      "type": "text",
+      "description": "First Name of property owner"
+    },
+    {
+      "name": "Owner's Last Name",
+      "field_name": "owner_s_last_name",
+      "type": "text",
+      "description": "Last Name of property owner"
+    },
+    {
+      "name": "Owner's House #",
+      "field_name": "owner_s_house__",
+      "type": "text",
+      "description": "Owner's House #"
+    },
+    {
+      "name": "Owner's House Street Name",
+      "field_name": "owner_s_house_street_name",
+      "type": "text",
+      "description": "Owner's House Street Name"
+    },
+    {
+      "name": "Owner\u2019s House City",
+      "field_name": "city",
+      "type": "text",
+      "description": "Owner\u2019s House City"
+    },
+    {
+      "name": "Owner\u2019s House State",
+      "field_name": "state",
+      "type": "text",
+      "description": "Owner\u2019s House State"
+    },
+    {
+      "name": "Owner\u2019s House Zip Code",
+      "field_name": "owner_s_zip_code",
+      "type": "text",
+      "description": "Owner\u2019s House Zip Code"
+    },
+    {
+      "name": "PERMIT_SI_NO",
+      "field_name": "permit_si_no",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "LATITUDE",
+      "field_name": "gis_latitude",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "LONGITUDE",
+      "field_name": "gis_longitude",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "COUNCIL_DISTRICT",
+      "field_name": "gis_council_district",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "CENSUS_TRACT",
+      "field_name": "gis_census_tract",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "BBL",
+      "field_name": "bbl",
+      "type": "number",
+      "description": ""
+    },
+    {
+      "name": "NTA_NAME",
+      "field_name": "gis_nta_name",
+      "type": "text",
+      "description": ""
+    },
+    {
+      "name": "DOBRunDate",
+      "field_name": "dobrundate",
+      "type": "calendar_date",
+      "description": "Date when query is run and pushed to Open Data. Could be used to differentiate report dates."
+    }
+  ]
+}

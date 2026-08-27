@@ -1,0 +1,3 @@
+# Stage 0 deliberately uses only Python's standard library.
+# Later stages will add pinned data/model dependencies only when needed.
+
