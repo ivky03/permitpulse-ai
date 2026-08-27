@@ -1,61 +1,86 @@
 # PermitPulse AI
 
-PermitPulse AI estimates whether an NYC construction permit is likely to be
-issued before a project target date, retrieves comparable historical permits,
-and proposes an administratively valid next step for project-manager approval.
+PermitPulse helps construction teams decide **which permit filings deserve attention
+first**. It estimates the risk that an NYC DOB filing will miss a 30-day first-permit
+target, retrieves comparable completed filings, drafts a grounded mitigation checklist,
+and pauses for human approval before producing a PDF or Procore-shaped risk draft.
 
-## Current checkpoint: portfolio release v1
+> Planning support only. PermitPulse does not determine compliance, predict examiner
+> objections, guarantee issuance, submit a filing, or write to Procore.
 
-Stage 0 established data viability and Stage 1 built the reproducible dataset.
-Stage 2 selected gradient boosting on a future-period test set. Stage 3 adds
-local sensitivity, comparable completed filings, and data-quality warnings.
-Stage 4 adds a LangGraph workflow that drafts a bounded checklist and pauses for
-human review. Stage 5 exposes the workflow through FastAPI, a Streamlit dashboard,
-Docker Compose, and CI. Stage 6 adds durable checkpoints, workspace history, a
-human-approved PDF report, and a verified runtime-artifact bundle.
+![Portfolio evaluation](reports/figures/portfolio_evaluation.png)
+
+## Why this project exists
+
+A project manager may have many upcoming permit-dependent milestones and limited time
+to investigate them. A raw model score is not enough. PermitPulse turns that score into
+a review queue with evidence, ownership, a needed-by date, an approval boundary, and a
+portable downstream record.
+
+On the untouched 2025-2026 test period, reviewing the highest-risk 20% found:
+
+| Ranking strategy | Actual delays per 100 reviews | Share of all delays found |
+| --- | ---: | ---: |
+| Random expected | 70.5 | 20.0% |
+| Historical-rate baseline | 97.6 | 27.7% |
+| PermitPulse | **99.4** | **28.2%** |
+
+The incremental gain over the strong baseline is modest, not hidden. The model is most
+useful as a calibrated prioritization and evidence workflow, not as autonomous AI.
+See the [full portfolio evaluation](reports/portfolio_evaluation.md).
+
+The largest known subgroup weakness is Professional Certification recall at 46.2%,
+versus 97.5% for Standard Plan Examination. This release reports that gap; it does not
+claim the model is ready for unsupervised operational use.
+
+## Product flow
 
 ```mermaid
 flowchart TD
-    A["NYC Open Data snapshot"] --> B["Clean + time-based labels"]
-    B --> C["Gradient boosting model"]
-    B --> D["DuckDB comparable index"]
-    C --> E["Evidence service"]
-    D --> E
-    E --> F["Bounded plan draft"]
-    F --> G{"Human review"}
-    G -->|Approve| H["Generate PDF"]
-    G -->|Reject| I["Save rejection"]
+    A["NYC Open Data snapshot"] --> B["Model + comparable index"]
+    B --> C["Risk and evidence service"]
+    C --> D["Portfolio UI or read-only MCP"]
+    D --> E{"Human review"}
+    E -->|Approve| F["PDF + Procore draft"]
+    E -->|Reject| G["Saved rejection"]
 ```
 
-## macOS + VS Code setup
+The LLM is optional and may rewrite only the checklist summary. Scores, evidence,
+warnings, actions, approval state, PDF generation, and Procore draft structure remain
+controlled by tested code.
+
+## What an interviewer can try
+
+1. Open **Portfolio** and load six demo projects.
+2. Sort/filter the risk queue and open one assessment.
+3. Inspect local sensitivity, comparable permits, and warnings.
+4. Reject once to confirm that no artifact is generated.
+5. Assess again, approve, and download the reviewed PDF and Procore-ready JSON draft.
+6. Call the read-only MCP tools from an MCP client.
+
+Use [the 5-minute demo script](reports/demo_script.md) and view the
+[sample approved PDF](output/pdf/permitpulse-sample-assessment.pdf).
+
+## Run locally
 
 ```bash
-git clone <your-repository-url>
+git clone https://github.com/ivky03/permitpulse-ai.git
 cd permitpulse-ai
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
 python -m pip install -r requirements.txt
 python -m unittest discover -v
-
-# Fast development proof: download and clean 5,000 live rows
-python -m src.data.build_dataset --observation-date 2026-08-26 --max-rows 5000
-
-# Full snapshot: omit --max-rows (this may take several minutes)
-python -m src.data.build_dataset --observation-date 2026-08-26
-
-# Train/evaluate Model v1 with its input profile
-python -m src.modeling.train
-
-# Build the local comparable-case index and run one real assessment
-python -m src.retrieval.comparables
-python -m src.services.demo
 ```
 
-## Run the finished application
+Runtime model artifacts are reproducible and intentionally excluded from Git. Either
+run the data/model/index pipeline or install the verified GitHub Release bundle:
 
-The model artifact must be retrained after pulling Stage 3+ because it now stores
-its input profile. Keep these two terminals open:
+```bash
+python scripts/manage_demo_artifacts.py install permitpulse-demo-artifacts.tar.gz
+```
+
+Then keep two terminals open:
 
 ```bash
 # Terminal 1
@@ -64,118 +89,98 @@ python -m uvicorn src.api.app:app --reload
 
 # Terminal 2
 source .venv/bin/activate
-python -m streamlit run ui.py
+PERMITPULSE_API_URL=http://localhost:8000 python -m streamlit run ui.py
 ```
 
-Open `http://localhost:8501`. Interactive API documentation is at
-`http://localhost:8000/docs`.
+Open `http://localhost:8501`; API docs are at `http://localhost:8000/docs`.
+Gemini is optional: set `GOOGLE_API_KEY` in a local `.env` to enable grounded summary
+rewriting. Never commit `.env`.
 
-Gemini is optional. Without an API key, the same workflow uses deterministic
-wording. To enable it, set `GOOGLE_API_KEY` in your shell or `.env` environment.
-Gemini can rewrite the summary only; the score, evidence, actions, and approval
-state remain controlled by code.
+## Read-only MCP service
 
-Configuration is loaded automatically from the repository-root `.env` file; you
-do not need to source it manually before starting FastAPI or Streamlit.
+PermitPulse exposes the same tested service layer as MCP rather than wrapping the UI:
 
-## Durable workspace history
+- `assess_permit_risk`
+- `find_comparable_permits`
+- `prioritize_permit_portfolio` (maximum 25 items)
+- model-card and portfolio-evaluation resources
 
-Enter a demo workspace ID in the Streamlit sidebar. It groups prior assessments,
-and clicking a history item reopens its result. LangGraph checkpoints and history
-are stored in `artifacts/permitpulse_state.sqlite`, so a pending approval can be
-resumed after FastAPI restarts.
-
-Workspace IDs are demo separation, not authentication. Do not enter private or
-sensitive project data. Use real authentication plus a shared database before any
-multi-user deployment.
-
-## Human-approved PDF
-
-The UI shows the risk, evidence, warnings, and checklist before the reviewer decides.
-Approval generates a polished PDF containing that reviewed context and exposes a
-workspace-scoped download button. Rejection records the decision and creates no PDF.
-Reports are stored under `artifacts/reports/`, which is covered by the same Docker
-volume as the SQLite checkpoint.
-
-See the committed [sample approved assessment](output/pdf/permitpulse-sample-assessment.pdf)
-for the exact report a reviewer receives.
-
-## Reviewer quick-start artifacts
-
-Runtime artifacts are intentionally excluded from Git. Build the release archive:
+Run locally over stdio:
 
 ```bash
-python scripts/manage_demo_artifacts.py build permitpulse-demo-artifacts.tar.gz
+python -m src.mcp.server
 ```
 
-Attach it to a GitHub Release. A reviewer can download it and run:
+Example MCP client configuration (replace the absolute paths):
+
+```json
+{
+  "mcpServers": {
+    "permitpulse": {
+      "command": "/absolute/path/permitpulse-ai/.venv/bin/python",
+      "args": ["-m", "src.mcp.server"],
+      "cwd": "/absolute/path/permitpulse-ai"
+    }
+  }
+}
+```
+
+For remote testing, run `python -m src.mcp.server --transport streamable-http` and
+connect to `http://localhost:8003/mcp`. All three tools are annotated read-only and
+perform no email, agency, or Procore write.
+
+## Public demo deployment
+
+`render.yaml` defines separate API, Streamlit, and MCP web services. Before deploying:
+
+1. Build `permitpulse-demo-artifacts.tar.gz` with `make bundle` and attach it to a
+   GitHub Release.
+2. Connect this repository as a Render Blueprint.
+3. Set `PERMITPULSE_ARTIFACT_BUNDLE_URL` on the API and MCP services to the release
+   asset URL.
+4. Set the UI's `PERMITPULSE_API_URL` to the deployed API base URL.
+
+The bootstrap process downloads only the three expected runtime files and verifies
+their SHA-256 hashes before installation. The public UI creates an anonymous workspace,
+caps batch assessment at 25, and the API rate-limits mutating demo calls.
+The hosted configuration intentionally uses deterministic checklist wording instead of
+exposing a paid LLM key to anonymous traffic.
+
+Free Render instances have an ephemeral filesystem. Demo history and PDFs therefore
+disappear on restart/redeploy; that is acceptable for an anonymous portfolio demo, but
+not for a real multi-user product. Production requires authentication, Postgres/shared
+LangGraph checkpoints, object storage, secrets management, and edge rate limiting.
+
+## Reproduce the full pipeline
 
 ```bash
-python scripts/manage_demo_artifacts.py install permitpulse-demo-artifacts.tar.gz
+# Optional fast proof with 5,000 live rows
+python -m src.data.build_dataset --observation-date 2026-08-26 --max-rows 5000
+
+# Full data, model, evidence index, and operational evaluation
+python -m src.data.build_dataset --observation-date 2026-08-26
+python -m src.modeling.train
+python -m src.retrieval.comparables
+python -m src.modeling.portfolio_evaluation
 ```
 
-Docker is also supported after local artifacts have been generated:
+The source dataset is NYC Open Data `w9ak-ipjd`. Missing first permits are labeled as
+delayed only after the 30-day outcome window matures; recent unresolved filings remain
+censored. Outcome fields, names, license numbers, and exact addresses are excluded.
 
-```bash
-docker compose up --build
-```
+## Engineering boundaries worth defending
 
-Stage 1 stores compressed outputs under `data/`. These large reproducible files
-are excluded from Git; their manifest records provenance, cleaning results,
-the feature policy, and cryptographic hashes.
+- Training uses 2016-2023, validation uses 2024, and the untouched future test uses
+  2025 through the mature 2026 cutoff.
+- Gradient boosting competes against logistic regression and a grouped historical-rate
+  baseline; threshold selection happens on validation data with an 80% delay-recall floor.
+- Local sensitivity is non-causal and non-additive. Completed comparables are selective
+  evidence, not a guarantee.
+- LangGraph uses a durable SQLite checkpointer for restart recovery in a single instance.
+  Workspace IDs separate demo records but are not authentication.
+- Human approval authorizes only PDF generation and a downloadable draft payload.
+- Subgroup precision/recall, calibration, false negatives, and limited-capacity ranking
+  are evaluated explicitly.
 
-Optional: copy `.env.example` to `.env`, add a Socrata app token, and export it
-before running the audit. Never commit `.env`.
-
-## Scope boundary
-
-This is a planning-support tool. It does not determine code compliance,
-predict examiner objections, guarantee issuance dates, or replace a licensed
-professional or DOB examiner.
-
-## Stage 1 rules worth defending
-
-- The API supplies the raw facts; our code only selects, cleans, and labels.
-- Every repeated `job_filing_number` is quarantined. There are very few, and
-  guessing which conflicting row is correct would be harder to defend.
-- A missing permit is a negative for a 30-day target only after 30 days have
-  elapsed. More recent unresolved filings remain censored and are not trained
-  as failures.
-- Outcome and post-filing status fields never enter the model feature list.
-- Applicant names, exact addresses, and license numbers are not downloaded
-  because the initial model does not need them.
-
-## Stage 2 rules worth defending
-
-- The positive class is delay risk: no first permit within 30 days.
-- 2016–2023 trains the models, 2024 chooses the model and threshold, and
-  2025 through the mature 2026 cutoff is reserved for final testing.
-- The alert threshold is selected only on validation data and must catch at
-  least 80% of delayed filings.
-- ML competes against a transparent historical rate grouped by borough, job
-  type, and review type; ML is not assumed to win.
-- Generated model artifacts stay local under `artifacts/`; reproducible metrics
-  and reports are committed.
-
-## Stage 3 rules worth defending
-
-- Online requests containing post-outcome fields are rejected.
-- Local sensitivity replaces one field at a time with its training reference;
-  it is not presented as causal or additive.
-- Comparable retrieval is parameterized, excludes the current filing, and
-  relaxes its matching scope only when strict matches are insufficient.
-- Comparable processing-time summaries include completed cases only and are
-  evidence, not a guarantee of approval timing.
-- Missing, unseen, extreme, and post-training inputs produce explicit warnings.
-
-## Product workflow rules worth defending
-
-- The LLM never calculates or changes the risk score.
-- LangGraph pauses before finalization and requires `approve` or `reject` on the
-  same thread.
-- Approval authorizes only a downloadable PDF from the displayed assessment; the
-  system never contacts DOB or changes a project schedule automatically.
-- A durable SQLite checkpointer supports restart recovery for this single-instance demo. A
-  durable shared checkpointer is still required for multi-instance deployment.
-- See `reports/project_guide.md` for a plain-English walkthrough and
-  `reports/stage6_portfolio.md` for the final persistence and PDF boundaries.
+For the plain-English product case, see [product brief](reports/product_brief.md).
+For implementation history and limitations, see [project guide](reports/project_guide.md).

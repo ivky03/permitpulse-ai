@@ -2,8 +2,11 @@
 
 from __future__ import annotations
 
+from datetime import date, timedelta
+import json
 import os
 from typing import Any
+from uuid import uuid4
 
 import pandas as pd
 import requests
@@ -142,23 +145,30 @@ except Exception as error:
 
 with st.sidebar:
     st.header("Demo workspace")
-    default_workspace = st.query_params.get("workspace", "")
-    workspace_input = st.text_input(
-        "Workspace ID",
-        value=st.session_state.get("workspace_id", default_workspace),
-        placeholder="vignesh-demo",
-        help="3-64 letters, numbers, underscores or hyphens.",
-    )
-    if st.button("Open workspace", type="primary", use_container_width=True):
-        try:
-            history = api_get("/api/v1/history", {"workspace_id": workspace_input})
-            st.session_state.workspace_id = history["workspace_id"]
-            st.query_params["workspace"] = history["workspace_id"]
-            st.session_state.pop("result", None)
-            st.rerun()
-        except Exception as error:
-            st.error(error)
-    st.caption("Demo separation only—not authentication. Do not enter sensitive data.")
+    if metadata.get("public_demo"):
+        if "workspace_id" not in st.session_state:
+            st.session_state.workspace_id = f"demo-{uuid4().hex}"
+        st.caption(f"Anonymous session: `{st.session_state.workspace_id[:18]}...`")
+    else:
+        default_workspace = st.query_params.get("workspace", "")
+        workspace_input = st.text_input(
+            "Workspace ID",
+            value=st.session_state.get("workspace_id", default_workspace),
+            placeholder="vignesh-demo",
+            help="3-64 letters, numbers, underscores or hyphens.",
+        )
+        if st.button("Open workspace", type="primary", use_container_width=True):
+            try:
+                history = api_get(
+                    "/api/v1/history", {"workspace_id": workspace_input}
+                )
+                st.session_state.workspace_id = history["workspace_id"]
+                st.query_params["workspace"] = history["workspace_id"]
+                st.session_state.pop("result", None)
+                st.rerun()
+            except Exception as error:
+                st.error(error)
+    st.caption("Demo separation only - not authentication. Do not enter sensitive data.")
 
 workspace_id = st.session_state.get("workspace_id")
 if not workspace_id:
@@ -175,9 +185,18 @@ except Exception as error:
 
 with st.sidebar:
     st.divider()
+    app_view = st.radio(
+        "View",
+        ["Portfolio", "Assessment"],
+        key="app_view",
+    )
+
+with st.sidebar:
+    st.divider()
     st.subheader("Assessment history")
     if st.button("＋ New assessment", use_container_width=True):
         st.session_state.pop("result", None)
+        st.session_state.app_view = "Assessment"
         st.rerun()
     if not history_items:
         st.caption("No assessments yet.")
@@ -192,12 +211,184 @@ with st.sidebar:
                     f"/api/v1/history/{item['thread_id']}",
                     {"workspace_id": workspace_id},
                 )
+                st.session_state.app_view = "Assessment"
                 st.rerun()
             except Exception as error:
                 st.error(error)
 
 references = metadata["reference_values"]
 categories = metadata["categories"]
+if app_view == "Portfolio":
+    st.subheader("Permit portfolio")
+    st.caption(
+        "Prioritize filings by model risk and needed-by date. Portfolio ordering is "
+        "planning support, not a permit or compliance decision."
+    )
+    try:
+        portfolio = api_get("/api/v1/portfolio", {"workspace_id": workspace_id})
+    except Exception as error:
+        st.error(f"Portfolio could not be loaded: {error}")
+        portfolio = {"summary": {}, "items": []}
+
+    items = portfolio.get("items", [])
+    if not items:
+        st.info("This workspace has no assessments yet.")
+        if st.button("Load six demo projects", type="primary"):
+            try:
+                api_post(
+                    f"/api/v1/portfolio/demo?workspace_id={workspace_id}", {}
+                )
+                st.rerun()
+            except Exception as error:
+                st.error(f"Demo portfolio failed: {error}")
+    else:
+        summary = portfolio["summary"]
+        first, second, third = st.columns(3)
+        first.metric("Portfolio filings", summary["total"])
+        second.metric("High risk", summary["high_risk"])
+        third.metric("Unassigned", summary["unassigned"])
+
+        distribution = pd.DataFrame(
+            {
+                "Risk level": ["High", "Moderate", "Low"],
+                "Filings": [
+                    summary["high_risk"],
+                    summary["moderate_risk"],
+                    summary["low_risk"],
+                ],
+            }
+        ).set_index("Risk level")
+        st.bar_chart(distribution, horizontal=True, height=220)
+
+        risk_filter = st.selectbox(
+            "Risk filter", ["All", "High", "Moderate", "Low"]
+        )
+        visible = [
+            item
+            for item in items
+            if risk_filter == "All"
+            or item.get("risk_level") == risk_filter.lower()
+        ]
+        portfolio_frame = pd.DataFrame(
+            [
+                {
+                    "Project": item.get("project_name"),
+                    "Needed by": item.get("permit_needed_by"),
+                    "Risk": str(item.get("risk_level") or "unknown").title(),
+                    "Delay probability": item.get("delay_probability"),
+                    "Owner": item.get("mitigation_owner"),
+                    "Workflow": item.get("status", "").replace("_", " ").title(),
+                }
+                for item in visible
+            ]
+        )
+        st.dataframe(
+            portfolio_frame,
+            use_container_width=True,
+            hide_index=True,
+            column_config={
+                "Delay probability": st.column_config.ProgressColumn(
+                    format="percent", min_value=0.0, max_value=1.0
+                )
+            },
+        )
+        selected_project = st.selectbox(
+            "Open an assessment",
+            visible,
+            format_func=lambda item: (
+                f"{item.get('project_name')} - "
+                f"{float(item.get('delay_probability') or 0):.0%}"
+            ),
+        )
+        if st.button("Review selected assessment", type="primary"):
+            try:
+                st.session_state.result = api_get(
+                    f"/api/v1/history/{selected_project['thread_id']}",
+                    {"workspace_id": workspace_id},
+                )
+                st.session_state.app_view = "Assessment"
+                st.rerun()
+            except Exception as error:
+                st.error(error)
+
+    st.divider()
+    st.subheader("Import a small portfolio")
+    template = pd.DataFrame(
+        [
+            {
+                "project_name": "Example project",
+                "permit_needed_by": (date.today() + timedelta(days=45)).isoformat(),
+                "mitigation_owner": "Project Manager",
+                "borough": references["borough"],
+                "job_type": references["job_type"],
+                "filing_review_type": references["filing_review_type"],
+                "building_type": references["building_type"],
+                "initial_cost": references["initial_cost"],
+                "total_construction_floor_area": references[
+                    "total_construction_floor_area"
+                ],
+            }
+        ]
+    )
+    st.download_button(
+        "Download CSV template",
+        template.to_csv(index=False),
+        file_name="permitpulse-portfolio-template.csv",
+        mime="text/csv",
+    )
+    upload = st.file_uploader(
+        "Upload portfolio CSV",
+        type=["csv"],
+        help=f"Maximum {metadata['max_portfolio_items']} filings per upload.",
+    )
+    if upload is not None and st.button("Assess uploaded portfolio"):
+        try:
+            frame = pd.read_csv(upload)
+            required = {
+                "project_name",
+                "permit_needed_by",
+                "borough",
+                "job_type",
+                "filing_review_type",
+                "building_type",
+                "initial_cost",
+                "total_construction_floor_area",
+            }
+            missing = sorted(required - set(frame.columns))
+            if missing:
+                raise ValueError(f"Missing CSV columns: {missing}")
+            if len(frame) > metadata["max_portfolio_items"]:
+                raise ValueError("The CSV contains too many rows for one upload.")
+            batch = []
+            for row in frame.to_dict("records"):
+                features = dict(references)
+                features.update(
+                    {column: row[column] for column in required if column not in {
+                        "project_name", "permit_needed_by"
+                    }}
+                )
+                batch.append(
+                    {
+                        "features": features,
+                        "project_context": {
+                            "project_name": row["project_name"],
+                            "permit_needed_by": row["permit_needed_by"],
+                            "mitigation_owner": row.get(
+                                "mitigation_owner", "Unassigned"
+                            ),
+                            "review_status": "new",
+                        },
+                    }
+                )
+            api_post(
+                "/api/v1/portfolio/assess",
+                {"workspace_id": workspace_id, "items": batch},
+            )
+            st.rerun()
+        except Exception as error:
+            st.error(f"Portfolio import failed: {error}")
+    st.stop()
+
 if "result" not in st.session_state:
     st.subheader("New permit assessment")
     with st.form("assessment"):
@@ -207,6 +398,10 @@ if "result" not in st.session_state:
         )
         left, right = st.columns(2)
         with left:
+            project_name = st.text_input("Project name", value="Demo project")
+            needed_by = st.date_input(
+                "Permit needed by", value=date.today() + timedelta(days=45)
+            )
             borough = select_value(
                 "Borough", categories["borough"], references["borough"]
             )
@@ -224,6 +419,9 @@ if "result" not in st.session_state:
                 references["building_type"],
             )
         with right:
+            mitigation_owner = st.text_input(
+                "Mitigation owner", value="Project Manager"
+            )
             initial_cost = st.number_input(
                 "Initial cost ($)",
                 min_value=0.0,
@@ -266,6 +464,12 @@ if "result" not in st.session_state:
                     "workspace_id": workspace_id,
                     "features": features,
                     "exclude_job": exclude_job or None,
+                    "project_context": {
+                        "project_name": project_name,
+                        "permit_needed_by": needed_by.isoformat(),
+                        "mitigation_owner": mitigation_owner,
+                        "review_status": "new",
+                    },
                 },
             )
             st.rerun()
@@ -315,6 +519,19 @@ if result:
                     file_name=result["report_file"]["filename"],
                     mime="application/pdf",
                     type="primary",
+                )
+                procore_draft = api_get(
+                    f"/api/v1/assessments/{result['thread_id']}/procore-draft",
+                    {"workspace_id": workspace_id},
+                )
+                st.download_button(
+                    "Download Procore-ready risk draft",
+                    data=json.dumps(procore_draft, indent=2) + "\n",
+                    file_name=f"permitpulse-procore-draft-{result['thread_id'][:12]}.json",
+                    mime="application/json",
+                )
+                st.caption(
+                    "Draft integration payload only. PermitPulse does not write to Procore."
                 )
             except Exception as error:
                 st.error(f"PDF download failed: {error}")

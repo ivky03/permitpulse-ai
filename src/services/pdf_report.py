@@ -171,12 +171,14 @@ class PDFReportService:
         plan: dict[str, Any],
         review: dict[str, str],
         generated_at: str,
+        project_context: dict[str, Any] | None = None,
     ) -> list[Any]:
         styles = self._styles()
         p = lambda text, style="body": self._p(styles, text, style)
         prediction = assessment["prediction"]
         evidence = assessment["historical_evidence"]
         context = assessment.get("model_context", {})
+        project_context = project_context or {}
         story: list[Any] = [
             p("Permit Risk Assessment", "title"),
             p(
@@ -205,6 +207,7 @@ class PDFReportService:
         story.extend([cards, Spacer(1, 10), p("Filing snapshot", "section")])
 
         snapshot = [
+            ["Project", project_context.get("project_name"), "Permit needed by", project_context.get("permit_needed_by")],
             ["Borough", request.get("borough"), "Job type", request.get("job_type")],
             ["Review type", request.get("filing_review_type"), "Building type", request.get("building_type")],
             ["Initial cost", money(request.get("initial_cost")), "Floor area", number(request.get("total_construction_floor_area"))],
@@ -301,7 +304,7 @@ class PDFReportService:
             ("VALIGN", (0, 0), (-1, -1), "TOP"),
             ("PADDING", (0, 0), (-1, -1), 6),
         ]))
-        story.append(review_table)
+        story.extend([review_table, Spacer(1, 8)])
 
         story.append(p("Warnings, limits, and model context", "section"))
         warnings = assessment.get("warnings", []) or ["No additional input warnings were generated."]
@@ -348,6 +351,7 @@ class PDFReportService:
         assessment: dict[str, Any],
         plan: dict[str, Any],
         review: dict[str, str],
+        project_context: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         path = self.path_for(thread_id)
         if not path.exists():
@@ -362,7 +366,15 @@ class PDFReportService:
             )
             template = _PageTemplate(thread_id)
             document.build(
-                self._build_story(thread_id, request, assessment, plan, review, generated_at),
+                self._build_story(
+                    thread_id,
+                    request,
+                    assessment,
+                    plan,
+                    review,
+                    generated_at,
+                    project_context,
+                ),
                 onFirstPage=template,
                 onLaterPages=template,
             )

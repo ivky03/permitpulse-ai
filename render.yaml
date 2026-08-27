@@ -1,0 +1,45 @@
+services:
+  - type: web
+    name: permitpulse-api
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python scripts/bootstrap_runtime.py && uvicorn src.api.app:app --host 0.0.0.0 --port $PORT
+    healthCheckPath: /health
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      - key: PERMITPULSE_PUBLIC_DEMO
+        value: "true"
+      - key: PERMITPULSE_RATE_LIMIT_PER_MINUTE
+        value: "30"
+      - key: PERMITPULSE_STATE_DB
+        value: /tmp/permitpulse/state.sqlite
+      - key: PERMITPULSE_REPORT_DIR
+        value: /tmp/permitpulse/reports
+      - key: PERMITPULSE_ARTIFACT_BUNDLE_URL
+        sync: false
+
+  - type: web
+    name: permitpulse-ui
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: streamlit run ui.py --server.address 0.0.0.0 --server.port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      - key: PERMITPULSE_API_URL
+        sync: false
+
+  - type: web
+    name: permitpulse-mcp
+    runtime: python
+    plan: free
+    buildCommand: pip install -r requirements.txt
+    startCommand: python scripts/bootstrap_runtime.py && python -m src.mcp.server --transport streamable-http --host 0.0.0.0 --port $PORT
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      - key: PERMITPULSE_ARTIFACT_BUNDLE_URL
+        sync: false

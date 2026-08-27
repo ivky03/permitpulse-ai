@@ -1,4 +1,4 @@
-.PHONY: setup test dataset train index demo bundle api ui
+.PHONY: setup test dataset train index demo bundle bootstrap api ui mcp evaluate-portfolio
 
 setup:
 	python3 -m venv .venv
@@ -23,8 +23,17 @@ demo:
 bundle:
 	python scripts/manage_demo_artifacts.py build permitpulse-demo-artifacts.tar.gz
 
+bootstrap:
+	python scripts/bootstrap_runtime.py
+
 api:
 	python -m uvicorn src.api.app:app --reload
 
 ui:
 	python -m streamlit run ui.py
+
+mcp:
+	python -m src.mcp.server
+
+evaluate-portfolio:
+	python -m src.modeling.portfolio_evaluation

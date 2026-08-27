@@ -22,6 +22,7 @@ from .planner import EvidencePlanner
 class PermitState(TypedDict, total=False):
     thread_id: str
     request: dict[str, Any]
+    project_context: dict[str, Any]
     exclude_job: str | None
     assessment: dict[str, Any]
     proposed_plan: dict[str, Any]
@@ -123,6 +124,7 @@ class PermitWorkflow:
                 state["assessment"],
                 state["proposed_plan"],
                 state["review"],
+                state.get("project_context"),
             )
         except Exception as error:
             report = {
@@ -161,6 +163,7 @@ class PermitWorkflow:
                 "status",
                 "assessment",
                 "proposed_plan",
+                "project_context",
                 "review",
                 "report_file",
                 "review_request",
@@ -174,12 +177,14 @@ class PermitWorkflow:
         request: dict[str, Any],
         exclude_job: str | None = None,
         thread_id: str | None = None,
+        project_context: dict[str, Any] | None = None,
     ) -> dict[str, Any]:
         thread_id = thread_id or str(uuid4())
         result = self.graph.invoke(
             {
                 "thread_id": thread_id,
                 "request": request,
+                "project_context": project_context or {},
                 "exclude_job": exclude_job,
             },
             config=self._config(thread_id),

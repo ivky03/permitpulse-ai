@@ -1,0 +1,220 @@
+{
+  "review_fraction": 0.2,
+  "test_rows": 248665,
+  "test_period": {
+    "rows": 248665,
+    "start": "2025-01-01",
+    "end": "2026-07-27",
+    "delay_rate": 0.7046025777652665
+  },
+  "operational_prioritization": {
+    "random_expected": {
+      "review_fraction": 0.2,
+      "reviewed_rows": 49733,
+      "delays_found": 35042.0,
+      "delays_found_per_100_reviews": 70.46025777652665,
+      "share_of_all_delays_caught": 0.2
+    },
+    "historical_rate_baseline": {
+      "review_fraction": 0.2,
+      "reviewed_rows": 49733,
+      "delays_found": 48548,
+      "delays_found_per_100_reviews": 97.61727625520278,
+      "share_of_all_delays_caught": 0.27708464128759774
+    },
+    "permitpulse": {
+      "review_fraction": 0.2,
+      "reviewed_rows": 49733,
+      "delays_found": 49418,
+      "delays_found_per_100_reviews": 99.36661773872478,
+      "share_of_all_delays_caught": 0.2820501112950174
+    }
+  },
+  "calibration": {
+    "expected_calibration_error": 0.05258871700525506,
+    "bins": [
+      {
+        "bin": 1,
+        "rows": 24884,
+        "mean_predicted": 0.14106968949610477,
+        "observed_delay_rate": 0.22926378395756308
+      },
+      {
+        "bin": 2,
+        "rows": 24849,
+        "mean_predicted": 0.2640464790765699,
+        "observed_delay_rate": 0.33168336753994127
+      },
+      {
+        "bin": 3,
+        "rows": 24867,
+        "mean_predicted": 0.4020022885531068,
+        "observed_delay_rate": 0.4690151606546829
+      },
+      {
+        "bin": 4,
+        "rows": 24866,
+        "mean_predicted": 0.519783120590419,
+        "observed_delay_rate": 0.578742057427813
+      },
+      {
+        "bin": 5,
+        "rows": 24867,
+        "mean_predicted": 0.6441659978833955,
+        "observed_delay_rate": 0.6866529939276953
+      },
+      {
+        "bin": 6,
+        "rows": 24866,
+        "mean_predicted": 0.7832501793592853,
+        "observed_delay_rate": 0.8622617228343924
+      },
+      {
+        "bin": 7,
+        "rows": 24866,
+        "mean_predicted": 0.867965870464793,
+        "observed_delay_rate": 0.9340867047373924
+      },
+      {
+        "bin": 8,
+        "rows": 24868,
+        "mean_predicted": 0.9331988094356976,
+        "observed_delay_rate": 0.9670258967347596
+      },
+      {
+        "bin": 9,
+        "rows": 24865,
+        "mean_predicted": 0.9738467867667411,
+        "observed_delay_rate": 0.9893826663985522
+      },
+      {
+        "bin": 10,
+        "rows": 24867,
+        "mean_predicted": 0.9909010768306654,
+        "observed_delay_rate": 0.9979893030924518
+      }
+    ]
+  },
+  "subgroups": {
+    "borough": [
+      {
+        "value": "Manhattan",
+        "rows": 91126,
+        "delay_rate": 0.6515045102385708,
+        "delay_precision": 0.8698505737637249,
+        "delay_recall": 0.7098991055938284
+      },
+      {
+        "value": "Brooklyn",
+        "rows": 68645,
+        "delay_rate": 0.7505717823585112,
+        "delay_precision": 0.8921257167975384,
+        "delay_recall": 0.866603264561458
+      },
+      {
+        "value": "Queens",
+        "rows": 49482,
+        "delay_rate": 0.7271533082737157,
+        "delay_precision": 0.8972590522623224,
+        "delay_recall": 0.8388316055696062
+      },
+      {
+        "value": "Bronx",
+        "rows": 26077,
+        "delay_rate": 0.745906354258542,
+        "delay_precision": 0.9148901545972336,
+        "delay_recall": 0.867101948485939
+      },
+      {
+        "value": "Staten Island",
+        "rows": 13335,
+        "delay_rate": 0.6663667041619797,
+        "delay_precision": 0.8652571428571428,
+        "delay_recall": 0.8520144046815215
+      }
+    ],
+    "job_type": [
+      {
+        "value": "Alteration",
+        "rows": 190195,
+        "delay_rate": 0.6287757301716659,
+        "delay_precision": 0.8477240293292653,
+        "delay_recall": 0.7202358056693704
+      },
+      {
+        "value": "New Building",
+        "rows": 23093,
+        "delay_rate": 0.9488589615900922,
+        "delay_precision": 0.9574018658686851,
+        "delay_recall": 0.9928806133625411
+      },
+      {
+        "value": "Alteration CO",
+        "rows": 20423,
+        "delay_rate": 0.9524066004015082,
+        "delay_precision": 0.958081757893695,
+        "delay_recall": 0.9952701660583003
+      },
+      {
+        "value": "ALT-CO - New Building with Existing Elements to Remain",
+        "rows": 6983,
+        "delay_rate": 0.9574681369039095,
+        "delay_precision": 0.9596716116952326,
+        "delay_recall": 0.9965599760693987
+      },
+      {
+        "value": "Full Demolition",
+        "rows": 4061,
+        "delay_rate": 0.9015020930805221,
+        "delay_precision": 0.913109756097561,
+        "delay_recall": 0.9816989893471729
+      },
+      {
+        "value": "No Work",
+        "rows": 3910,
+        "delay_rate": 1.0,
+        "delay_precision": 1.0,
+        "delay_recall": 1.0
+      }
+    ],
+    "filing_review_type": [
+      {
+        "value": "Standard Plan Examination",
+        "rows": 128999,
+        "delay_rate": 0.9125419576895945,
+        "delay_precision": 0.944882861680505,
+        "delay_recall": 0.9754326053161395
+      },
+      {
+        "value": "Professional Certification",
+        "rows": 119666,
+        "delay_rate": 0.48044557351294437,
+        "delay_precision": 0.7034205444300415,
+        "delay_recall": 0.4624910858713235
+      }
+    ]
+  },
+  "false_negatives": {
+    "rows": 33795,
+    "largest_groups": {
+      "borough": {
+        "Manhattan": 17223,
+        "Brooklyn": 6873,
+        "Queens": 5799,
+        "Bronx": 2585,
+        "Staten Island": 1315
+      },
+      "job_type": {
+        "Alteration": 33457,
+        "New Building": 156,
+        "Alteration CO": 92,
+        "Full Demolition": 67,
+        "ALT-CO - New Building with Existing Elements to Remain": 23
+      },
+      "filing_review_type": {
+        "Professional Certification": 30903,
+        "Standard Plan Examination": 2892
+      }
+    }
+  }
+}

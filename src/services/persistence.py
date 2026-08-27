@@ -158,6 +158,7 @@ class HistoryStore:
             result = json.loads(row["result_json"])
             prediction = result.get("assessment", {}).get("prediction", {})
             report = result.get("report_file", {})
+            project = result.get("project_context", {})
             summaries.append(
                 {
                     "thread_id": row["thread_id"],
@@ -169,6 +170,12 @@ class HistoryStore:
                     "risk_level": prediction.get("risk_level"),
                     "delay_probability": prediction.get("delay_probability"),
                     "report_status": report.get("status", "not_generated"),
+                    "project_name": project.get("project_name", "Unnamed project"),
+                    "permit_needed_by": project.get("permit_needed_by"),
+                    "mitigation_owner": project.get(
+                        "mitigation_owner", "Unassigned"
+                    ),
+                    "review_status": project.get("review_status", "new"),
                 }
             )
         return summaries

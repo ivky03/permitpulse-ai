@@ -31,3 +31,11 @@ services:
     depends_on:
       api:
         condition: service_healthy
+
+  mcp:
+    build: .
+    command: python -m src.mcp.server --transport streamable-http --host 0.0.0.0 --port 8003
+    ports:
+      - "8003:8003"
+    volumes:
+      - ./artifacts:/app/artifacts:ro

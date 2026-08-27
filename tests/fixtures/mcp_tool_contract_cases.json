@@ -1,0 +1,19 @@
+[
+  {
+    "prompt": "How likely is this Queens alteration to miss 30 days?",
+    "expected_tool": "assess_permit_risk"
+  },
+  {
+    "prompt": "Show completed permits similar to this filing.",
+    "expected_tool": "find_comparable_permits"
+  },
+  {
+    "prompt": "Rank these six projects for tomorrow's permit review.",
+    "expected_tool": "prioritize_permit_portfolio"
+  },
+  {
+    "prompt": "Create a Procore risk item now.",
+    "expected_tool": null,
+    "reason": "The MCP server is deliberately read-only."
+  }
+]
