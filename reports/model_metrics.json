@@ -1,0 +1,249 @@
+{
+  "target": "delay_over_30_days",
+  "observation_date": "2026-08-26",
+  "dataset": "data/processed/dob_now_filings_model_2026-08-26.csv.gz",
+  "split_policy": {
+    "train_end_exclusive": "2024-01-01",
+    "validation_end_exclusive": "2025-01-01",
+    "test_maturity_cutoff": "2026-07-27"
+  },
+  "minimum_delay_recall": 0.8,
+  "selected_features": [
+    "borough",
+    "commmunity_board",
+    "job_type",
+    "filing_review_type",
+    "applicant_professional_title",
+    "owner_type",
+    "building_type",
+    "review_building_code",
+    "initial_cost",
+    "total_construction_floor_area",
+    "existing_stories",
+    "existing_height",
+    "existing_dwelling_units",
+    "proposed_no_of_stories",
+    "proposed_height",
+    "proposed_dwelling_units",
+    "little_e",
+    "in_compliance_with_nycecc",
+    "exempt_from_nycecc",
+    "sprinkler_work_type",
+    "plumbing_work_type",
+    "standpipe",
+    "antenna",
+    "sign",
+    "curb_cut",
+    "fence",
+    "scaffold",
+    "shed",
+    "earth_work_work_type_",
+    "foundation_work_type_",
+    "general_construction_work_type_",
+    "mechanical_systems_work_type_",
+    "place_of_assembly_work_type_",
+    "protection_mechanical_methods_work_type_",
+    "sidewalk_shed_work_type_",
+    "structural_work_type_",
+    "temporary_place_of_assembly_work_type_",
+    "solar_work_type_",
+    "full_demolition_work_type_",
+    "suspended_scaffold_work_type_"
+  ],
+  "categorical_features": [
+    "borough",
+    "commmunity_board",
+    "job_type",
+    "filing_review_type",
+    "applicant_professional_title",
+    "owner_type",
+    "building_type",
+    "review_building_code",
+    "little_e",
+    "in_compliance_with_nycecc",
+    "exempt_from_nycecc",
+    "sprinkler_work_type",
+    "plumbing_work_type",
+    "standpipe",
+    "antenna",
+    "sign",
+    "curb_cut",
+    "fence",
+    "scaffold",
+    "shed",
+    "earth_work_work_type_",
+    "foundation_work_type_",
+    "general_construction_work_type_",
+    "mechanical_systems_work_type_",
+    "place_of_assembly_work_type_",
+    "protection_mechanical_methods_work_type_",
+    "sidewalk_shed_work_type_",
+    "structural_work_type_",
+    "temporary_place_of_assembly_work_type_",
+    "solar_work_type_",
+    "full_demolition_work_type_",
+    "suspended_scaffold_work_type_"
+  ],
+  "numeric_features": [
+    "initial_cost",
+    "total_construction_floor_area",
+    "existing_stories",
+    "existing_height",
+    "existing_dwelling_units",
+    "proposed_no_of_stories",
+    "proposed_height",
+    "proposed_dwelling_units"
+  ],
+  "splits": {
+    "train": {
+      "rows": 527508,
+      "start": "2016-08-04",
+      "end": "2023-12-31",
+      "delay_rate": 0.6281781508526885
+    },
+    "validation": {
+      "rows": 155966,
+      "start": "2024-01-01",
+      "end": "2024-12-31",
+      "delay_rate": 0.6636831104215021
+    },
+    "test": {
+      "rows": 248665,
+      "start": "2025-01-01",
+      "end": "2026-07-27",
+      "delay_rate": 0.7046025777652665
+    }
+  },
+  "models": {
+    "historical_rate_baseline": {
+      "threshold": 0.43,
+      "validation": {
+        "rows": 155966,
+        "delay_rate": 0.6636831104215021,
+        "threshold": 0.43,
+        "roc_auc": 0.7440402704517994,
+        "average_precision": 0.8505168003649479,
+        "brier_score": 0.18228011190452773,
+        "accuracy": 0.6784106792506059,
+        "balanced_accuracy": 0.6046565233712349,
+        "delay_precision": 0.725193095006964,
+        "delay_recall": 0.8299520828502975,
+        "delay_f1": 0.7740441577280529,
+        "false_clear_rate": 0.17004791714970244,
+        "confusion_matrix": {
+          "tn": 19899,
+          "fp": 32555,
+          "fn": 17602,
+          "tp": 85910
+        }
+      },
+      "test": {
+        "rows": 248665,
+        "delay_rate": 0.7046025777652665,
+        "threshold": 0.43,
+        "roc_auc": 0.7882387322868751,
+        "average_precision": 0.895613308885068,
+        "brier_score": 0.15803983650483708,
+        "accuracy": 0.7232059196107212,
+        "balanced_accuracy": 0.6367457756411066,
+        "delay_precision": 0.7787952009308811,
+        "delay_recall": 0.8480337880257977,
+        "delay_f1": 0.8119410814842745,
+        "false_clear_rate": 0.15196621197420238,
+        "confusion_matrix": {
+          "tn": 31252,
+          "fp": 42203,
+          "fn": 26626,
+          "tp": 148584
+        }
+      }
+    },
+    "logistic_regression": {
+      "threshold": 0.5,
+      "validation": {
+        "rows": 155966,
+        "delay_rate": 0.6636831104215021,
+        "threshold": 0.5,
+        "roc_auc": 0.8570079685275152,
+        "average_precision": 0.922594532284435,
+        "brier_score": 0.14588689439054064,
+        "accuracy": 0.7814203095546465,
+        "balanced_accuracy": 0.7693525618800535,
+        "delay_precision": 0.8560599066523055,
+        "delay_recall": 0.8062157044593864,
+        "delay_f1": 0.8303905033408459,
+        "false_clear_rate": 0.19378429554061366,
+        "confusion_matrix": {
+          "tn": 38422,
+          "fp": 14032,
+          "fn": 20059,
+          "tp": 83453
+        }
+      },
+      "test": {
+        "rows": 248665,
+        "delay_rate": 0.7046025777652665,
+        "threshold": 0.5,
+        "roc_auc": 0.8589238378321676,
+        "average_precision": 0.9385043576600254,
+        "brier_score": 0.14171579337079562,
+        "accuracy": 0.7875253855588844,
+        "balanced_accuracy": 0.7726113505824574,
+        "delay_precision": 0.8797281782356409,
+        "delay_recall": 0.8090577021859483,
+        "delay_f1": 0.8429142695743953,
+        "false_clear_rate": 0.1909422978140517,
+        "confusion_matrix": {
+          "tn": 54075,
+          "fp": 19380,
+          "fn": 33455,
+          "tp": 141755
+        }
+      }
+    },
+    "gradient_boosting": {
+      "threshold": 0.53,
+      "validation": {
+        "rows": 155966,
+        "delay_rate": 0.6636831104215021,
+        "threshold": 0.53,
+        "roc_auc": 0.8684922734740199,
+        "average_precision": 0.9301250920196197,
+        "brier_score": 0.13971349809757,
+        "accuracy": 0.7859084672300373,
+        "balanced_accuracy": 0.7780656577362506,
+        "delay_precision": 0.8655295724428412,
+        "delay_recall": 0.802022953860422,
+        "delay_f1": 0.8325669787242578,
+        "false_clear_rate": 0.19797704613957803,
+        "confusion_matrix": {
+          "tn": 39556,
+          "fp": 12898,
+          "fn": 20493,
+          "tp": 83019
+        }
+      },
+      "test": {
+        "rows": 248665,
+        "delay_rate": 0.7046025777652665,
+        "threshold": 0.53,
+        "roc_auc": 0.8690837287736994,
+        "average_precision": 0.9444204620468235,
+        "brier_score": 0.13611297986022475,
+        "accuracy": 0.7920736734160416,
+        "balanced_accuracy": 0.7816540194164194,
+        "delay_precision": 0.8875938339484322,
+        "delay_recall": 0.8071171736773015,
+        "delay_f1": 0.8454447081612033,
+        "false_clear_rate": 0.1928828263226985,
+        "confusion_matrix": {
+          "tn": 55546,
+          "fp": 17909,
+          "fn": 33795,
+          "tp": 141415
+        }
+      }
+    }
+  },
+  "winner": "gradient_boosting"
+}

@@ -4,11 +4,12 @@ PermitPulse AI estimates whether an NYC construction permit is likely to be
 issued before a project target date, retrieves comparable historical permits,
 and proposes an administratively valid next step for project-manager approval.
 
-## Current checkpoint: Stage 1
+## Current checkpoint: Stage 2
 
-Stage 0 established `GO WITH LIMITATIONS`. Stage 1 is complete: it downloads a
-reproducible raw snapshot and builds a leakage-safe, filing-level table. No
-model or agent code is added before this data contract passes.
+Stage 0 established data viability and Stage 1 built the reproducible dataset.
+Stage 2 is complete: it compares a historical-rate baseline, logistic
+regression, and gradient boosting on a future-period test set. Gradient
+boosting currently wins.
 
 ## macOS + VS Code setup
 
@@ -25,6 +26,10 @@ python -m src.data.build_dataset --observation-date 2026-08-26 --max-rows 5000
 
 # Full snapshot: omit --max-rows (this may take several minutes)
 python -m src.data.build_dataset --observation-date 2026-08-26
+
+# Install Stage 2 model dependencies and train/evaluate all candidates
+python -m pip install -r requirements.txt
+python -m src.modeling.train
 ```
 
 Stage 1 stores compressed outputs under `data/`. These large reproducible files
@@ -51,3 +56,15 @@ professional or DOB examiner.
 - Outcome and post-filing status fields never enter the model feature list.
 - Applicant names, exact addresses, and license numbers are not downloaded
   because the initial model does not need them.
+
+## Stage 2 rules worth defending
+
+- The positive class is delay risk: no first permit within 30 days.
+- 2016–2023 trains the models, 2024 chooses the model and threshold, and
+  2025 through the mature 2026 cutoff is reserved for final testing.
+- The alert threshold is selected only on validation data and must catch at
+  least 80% of delayed filings.
+- ML competes against a transparent historical rate grouped by borough, job
+  type, and review type; ML is not assumed to win.
+- Generated model artifacts stay local under `artifacts/`; reproducible metrics
+  and reports are committed.
