@@ -3,10 +3,10 @@
 PermitPulse helps construction teams decide **which permit filings deserve attention
 first**. It estimates the risk that an NYC DOB filing will miss a 30-day first-permit
 target, retrieves comparable completed filings, drafts a grounded mitigation checklist,
-and pauses for human approval before producing a PDF or Procore-shaped risk draft.
+and pauses for human approval before producing a PDF or integration-ready risk draft.
 
 > Planning support only. PermitPulse does not determine compliance, predict examiner
-> objections, guarantee issuance, submit a filing, or write to Procore.
+> objections, guarantee issuance, submit a filing, or write to an external platform.
 
 ![Portfolio evaluation](reports/figures/portfolio_evaluation.png)
 
@@ -39,24 +39,31 @@ claim the model is ready for unsupervised operational use.
 flowchart TD
     A["NYC Open Data snapshot"] --> B["Model + comparable index"]
     B --> C["Risk and evidence service"]
-    C --> D["Portfolio UI or read-only MCP"]
-    D --> E{"Human review"}
-    E -->|Approve| F["PDF + Procore draft"]
-    E -->|Reject| G["Saved rejection"]
+    C --> D["Manual fields, document, or portfolio"]
+    D --> E["Gemini agent calls evidence tools"]
+    E --> F{"Human review"}
+    F -->|Approve| G["PDF + integration draft"]
+    F -->|Reject| H["Saved rejection"]
 ```
 
-The LLM is optional and may rewrite only the checklist summary. Scores, evidence,
-warnings, actions, approval state, PDF generation, and Procore draft structure remain
-controlled by tested code.
+With `GOOGLE_API_KEY`, Gemini extracts candidate fields from PDF/image uploads, calls
+the frozen risk and comparable-permit tools inside the LangGraph planning node, and
+answers grounded follow-up questions in a durable per-assessment chat. The API reloads
+the bounded conversation history from SQLite on every turn, so users can continue the
+discussion after a page or API restart. Extracted fields require user confirmation, and
+numeric claims are checked against tool output. Without Gemini, manual and portfolio
+assessment continue with deterministic planning. Scores, evidence, approval state, and
+report generation always remain controlled by tested code.
 
 ## What an interviewer can try
 
-1. Open **Portfolio** and load six demo projects.
-2. Sort/filter the risk queue and open one assessment.
-3. Inspect local sensitivity, comparable permits, and warnings.
-4. Reject once to confirm that no artifact is generated.
-5. Assess again, approve, and download the reviewed PDF and Procore-ready JSON draft.
-6. Call the read-only MCP tools from an MCP client.
+1. Open **Assess one permit** and enter one filing or upload a PDF/image.
+2. Confirm Gemini's extracted values before the model runs.
+3. Inspect the agent's tool trace, local sensitivity, comparables, and warnings.
+4. Ask a grounded follow-up question, then reject once to confirm no artifact appears.
+5. Approve another assessment and download the PDF and integration-ready JSON draft.
+6. Optionally load six examples or upload CSV on **Portfolio** to demonstrate ranking.
+7. Call the read-only MCP tools from an MCP client.
 
 Use [the 5-minute demo script](reports/demo_script.md) and view the
 [sample approved PDF](output/pdf/permitpulse-sample-assessment.pdf).
@@ -93,8 +100,32 @@ PERMITPULSE_API_URL=http://localhost:8000 python -m streamlit run ui.py
 ```
 
 Open `http://localhost:8501`; API docs are at `http://localhost:8000/docs`.
-Gemini is optional: set `GOOGLE_API_KEY` in a local `.env` to enable grounded summary
-rewriting. Never commit `.env`.
+Gemini is optional for basic scoring but required for document intake, tool-calling
+briefings, and grounded follow-up questions. Add a local `.env`:
+
+```text
+GOOGLE_API_KEY=your_key
+GEMINI_MODEL=gemini-2.5-flash
+```
+
+Restart the API after adding it. Never commit `.env`.
+
+The primary UI path assesses one permit. The six-project portfolio is only a quick demo
+seed, not an input requirement. Users can also upload a CSV of up to 25 filings.
+
+## Agent evaluation
+
+The normal test suite evaluates agent contracts without spending tokens. With Gemini
+configured, run the live tool-use and grounding suite:
+
+```bash
+python -m scripts.evaluate_agent
+```
+
+It measures required tool use, numeric grounding, prohibited claims, resistance to a
+direct prompt-injection attempt, and exact extraction of six core fields from a labeled
+synthetic PDF. Results are written to `reports/agent_evaluation.md` and
+`artifacts/agent_evaluation.json`.
 
 ## Read-only MCP service
 

@@ -46,13 +46,20 @@ later enhancement after the end-to-end product works.
 
 ## 4. What happens during one assessment?
 
-1. The API receives only facts available when the filing is made.
+1. The user enters one filing, uploads a confirmed document extraction, or imports a
+   portfolio. The API accepts only facts available when the filing is made.
 2. The model returns a 30-day delay probability and risk level.
 3. Local sensitivity shows which entered fields moved this individual prediction most.
 4. DuckDB retrieves similar completed filings and summarizes their actual timing.
-5. Code creates a bounded project-manager checklist; Gemini may optionally rewrite its
-   summary without changing facts.
+5. When configured, a Gemini agent must call the frozen risk and comparable tools before
+   drafting its briefing. Deterministic code rejects unsupported numerical claims; the
+   tested checklist remains the fallback.
 6. LangGraph pauses. A human reviews the result and approves or rejects it.
+
+Grounded follow-up questions are stored per workspace and assessment in SQLite. Each
+turn receives up to eight prior user/assistant messages for continuity, while the risk
+and comparable tools remain the only factual source. Provider failures return a
+recoverable message rather than losing the earlier conversation.
 
 “Approved” does not mean DOB approval. It means a person approved the displayed
 assessment for a downloadable PDF report. Rejection creates no report. The app has no
@@ -71,7 +78,8 @@ The strongest interview story is the engineering judgment:
 - use time-based evaluation because future projects differ from old ones;
 - prevent outcome leakage;
 - show evidence and uncertainty instead of only a score;
-- keep generative AI away from factual calculations;
+- let generative AI choose read-only evidence tools while keeping factual calculations
+  deterministic;
 - require human approval before operational follow-up.
 
 ## 6. How to run and explain it

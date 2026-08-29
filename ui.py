@@ -2,9 +2,10 @@
 
 from __future__ import annotations
 
-from datetime import date, timedelta
+import base64
 import json
 import os
+from datetime import date, timedelta
 from typing import Any
 from uuid import uuid4
 
@@ -13,16 +14,13 @@ import requests
 import streamlit as st
 from dotenv import load_dotenv
 
-
 load_dotenv()
 API_URL = os.getenv("PERMITPULSE_API_URL", "http://localhost:8000").rstrip("/")
 TIMEOUT_SECONDS = 30
 
 
 def api_get(path: str, params: dict[str, Any] | None = None) -> dict[str, Any]:
-    response = requests.get(
-        f"{API_URL}{path}", params=params, timeout=TIMEOUT_SECONDS
-    )
+    response = requests.get(f"{API_URL}{path}", params=params, timeout=TIMEOUT_SECONDS)
     if not response.ok:
         try:
             detail = response.json().get("detail", response.text)
@@ -33,9 +31,7 @@ def api_get(path: str, params: dict[str, Any] | None = None) -> dict[str, Any]:
 
 
 def api_post(path: str, payload: dict[str, Any]) -> dict[str, Any]:
-    response = requests.post(
-        f"{API_URL}{path}", json=payload, timeout=TIMEOUT_SECONDS
-    )
+    response = requests.post(f"{API_URL}{path}", json=payload, timeout=TIMEOUT_SECONDS)
     if not response.ok:
         try:
             detail = response.json().get("detail", response.text)
@@ -46,9 +42,7 @@ def api_post(path: str, payload: dict[str, Any]) -> dict[str, Any]:
 
 
 def api_get_bytes(path: str, params: dict[str, Any] | None = None) -> bytes:
-    response = requests.get(
-        f"{API_URL}{path}", params=params, timeout=TIMEOUT_SECONDS
-    )
+    response = requests.get(f"{API_URL}{path}", params=params, timeout=TIMEOUT_SECONDS)
     if not response.ok:
         try:
             detail = response.json().get("detail", response.text)
@@ -64,6 +58,14 @@ def select_value(label: str, values: list[Any], reference: Any) -> Any:
         options.insert(0, reference)
     index = options.index(reference) if reference in options else 0
     return st.selectbox(label, options, index=index)
+
+
+def select_with_default(label: str, values: list[Any], default: Any, key: str) -> Any:
+    options = [value for value in values if value not in (None, "")]
+    if default not in options and default not in (None, ""):
+        options.insert(0, default)
+    index = options.index(default) if default in options else 0
+    return st.selectbox(label, options, index=index, key=key)
 
 
 def history_label(item: dict[str, Any]) -> str:
@@ -111,14 +113,23 @@ def render_result(result: dict[str, Any]) -> None:
         f"{evidence['count']} displayed completed cases missed 30 days."
     )
     if evidence["comparables"]:
-        st.dataframe(
-            evidence["comparables"], use_container_width=True, hide_index=True
-        )
+        st.dataframe(evidence["comparables"], use_container_width=True, hide_index=True)
     st.caption(evidence["coverage_note"])
 
     st.subheader("Proposed checklist")
     plan = result["proposed_plan"]
     st.write(plan["summary"])
+    trace = plan.get("agent_trace", {})
+    if trace.get("mode") == "gemini_tool_calling":
+        st.success(
+            "Gemini planning agent used: " + ", ".join(trace.get("tool_calls", []))
+        )
+    elif plan.get("planner_warning"):
+        st.warning(plan["planner_warning"])
+    else:
+        st.caption(
+            "Deterministic planning fallback used; configure Gemini for agent mode."
+        )
     st.write(f"**Timing:** {plan['timing']}")
     for item in plan["recommended_actions"]:
         st.markdown(
@@ -133,8 +144,8 @@ def render_result(result: dict[str, Any]) -> None:
 st.set_page_config(page_title="PermitPulse AI", page_icon="🏗️", layout="wide")
 st.title("PermitPulse AI")
 st.write(
-    "Estimate 30-day permit-delay risk, inspect evidence, then approve or reject "
-    "a human-reviewed downloadable report."
+    "Assess one permit from entered fields or an uploaded document, let a grounded "
+    "Gemini agent use ML and evidence tools, then approve or reject the report."
 )
 
 try:
@@ -159,16 +170,16 @@ with st.sidebar:
         )
         if st.button("Open workspace", type="primary", use_container_width=True):
             try:
-                history = api_get(
-                    "/api/v1/history", {"workspace_id": workspace_input}
-                )
+                history = api_get("/api/v1/history", {"workspace_id": workspace_input})
                 st.session_state.workspace_id = history["workspace_id"]
                 st.query_params["workspace"] = history["workspace_id"]
                 st.session_state.pop("result", None)
                 st.rerun()
             except Exception as error:
                 st.error(error)
-    st.caption("Demo separation only - not authentication. Do not enter sensitive data.")
+    st.caption(
+        "Demo separation only - not authentication. Do not enter sensitive data."
+    )
 
 workspace_id = st.session_state.get("workspace_id")
 if not workspace_id:
@@ -176,9 +187,7 @@ if not workspace_id:
     st.stop()
 
 try:
-    history_items = api_get(
-        "/api/v1/history", {"workspace_id": workspace_id}
-    )["items"]
+    history_items = api_get("/api/v1/history", {"workspace_id": workspace_id})["items"]
 except Exception as error:
     st.error(f"History could not be loaded: {error}")
     history_items = []
@@ -187,7 +196,7 @@ with st.sidebar:
     st.divider()
     app_view = st.radio(
         "View",
-        ["Portfolio", "Assessment"],
+        ["Assess one permit", "Portfolio"],
         key="app_view",
     )
 
@@ -196,7 +205,8 @@ with st.sidebar:
     st.subheader("Assessment history")
     if st.button("＋ New assessment", use_container_width=True):
         st.session_state.pop("result", None)
-        st.session_state.app_view = "Assessment"
+        st.session_state.pop("document_intake", None)
+        st.session_state.app_view = "Assess one permit"
         st.rerun()
     if not history_items:
         st.caption("No assessments yet.")
@@ -211,7 +221,7 @@ with st.sidebar:
                     f"/api/v1/history/{item['thread_id']}",
                     {"workspace_id": workspace_id},
                 )
-                st.session_state.app_view = "Assessment"
+                st.session_state.app_view = "Assess one permit"
                 st.rerun()
             except Exception as error:
                 st.error(error)
@@ -235,9 +245,7 @@ if app_view == "Portfolio":
         st.info("This workspace has no assessments yet.")
         if st.button("Load six demo projects", type="primary"):
             try:
-                api_post(
-                    f"/api/v1/portfolio/demo?workspace_id={workspace_id}", {}
-                )
+                api_post(f"/api/v1/portfolio/demo?workspace_id={workspace_id}", {})
                 st.rerun()
             except Exception as error:
                 st.error(f"Demo portfolio failed: {error}")
@@ -260,14 +268,11 @@ if app_view == "Portfolio":
         ).set_index("Risk level")
         st.bar_chart(distribution, horizontal=True, height=220)
 
-        risk_filter = st.selectbox(
-            "Risk filter", ["All", "High", "Moderate", "Low"]
-        )
+        risk_filter = st.selectbox("Risk filter", ["All", "High", "Moderate", "Low"])
         visible = [
             item
             for item in items
-            if risk_filter == "All"
-            or item.get("risk_level") == risk_filter.lower()
+            if risk_filter == "All" or item.get("risk_level") == risk_filter.lower()
         ]
         portfolio_frame = pd.DataFrame(
             [
@@ -306,7 +311,7 @@ if app_view == "Portfolio":
                     f"/api/v1/history/{selected_project['thread_id']}",
                     {"workspace_id": workspace_id},
                 )
-                st.session_state.app_view = "Assessment"
+                st.session_state.app_view = "Assess one permit"
                 st.rerun()
             except Exception as error:
                 st.error(error)
@@ -363,9 +368,11 @@ if app_view == "Portfolio":
             for row in frame.to_dict("records"):
                 features = dict(references)
                 features.update(
-                    {column: row[column] for column in required if column not in {
-                        "project_name", "permit_needed_by"
-                    }}
+                    {
+                        column: row[column]
+                        for column in required
+                        if column not in {"project_name", "permit_needed_by"}
+                    }
                 )
                 batch.append(
                     {
@@ -390,59 +397,174 @@ if app_view == "Portfolio":
     st.stop()
 
 if "result" not in st.session_state:
-    st.subheader("New permit assessment")
+    st.subheader("Assess one permit")
+    entry_mode = st.radio(
+        "How do you want to provide the permit?",
+        ["Enter fields", "Upload PDF or image"],
+        horizontal=True,
+    )
+    intake = st.session_state.get("document_intake")
+    if entry_mode == "Upload PDF or image":
+        st.caption(
+            "Gemini extracts candidate fields. You must inspect and confirm them "
+            "before "
+            "the ML model runs. Document instructions are treated as untrusted data."
+        )
+        st.warning(
+            "The uploaded file is sent to the configured Google Gemini API for "
+            "extraction and is not stored by PermitPulse. Use demo documents only; "
+            "do not upload confidential or personal information."
+        )
+        if not metadata.get("gemini_configured"):
+            st.info("Add GOOGLE_API_KEY to the API's local .env and restart it first.")
+        uploaded_document = st.file_uploader(
+            "Permit application or project brief",
+            type=["pdf", "png", "jpg", "jpeg"],
+            help=f"PDF, PNG, or JPEG; maximum {metadata['max_document_mb']} MB.",
+        )
+        if uploaded_document is not None and st.button(
+            "Extract fields with Gemini",
+            type="primary",
+            disabled=not metadata.get("gemini_configured"),
+        ):
+            try:
+                content = uploaded_document.getvalue()
+                if len(content) > metadata["max_document_mb"] * 1024 * 1024:
+                    raise ValueError("The document exceeds the local demo size limit.")
+                mime = uploaded_document.type or {
+                    ".pdf": "application/pdf",
+                    ".png": "image/png",
+                    ".jpg": "image/jpeg",
+                    ".jpeg": "image/jpeg",
+                }.get(os.path.splitext(uploaded_document.name)[1].lower())
+                st.session_state.document_intake = api_post(
+                    "/api/v1/agent/document-intake",
+                    {
+                        "filename": uploaded_document.name,
+                        "mime_type": mime,
+                        "content_base64": base64.b64encode(content).decode("ascii"),
+                    },
+                )
+                for key in (
+                    "one-borough",
+                    "one-job-type",
+                    "one-review-type",
+                    "one-building-type",
+                ):
+                    st.session_state.pop(key, None)
+                st.rerun()
+            except Exception as error:
+                st.error(f"Document extraction failed: {error}")
+        intake = st.session_state.get("document_intake")
+        if intake:
+            st.success(
+                f"Extracted with {intake['generated_by']}. Confirm every field below."
+            )
+            st.dataframe(
+                pd.DataFrame(intake["field_evidence"]),
+                use_container_width=True,
+                hide_index=True,
+            )
+            if intake["missing_required_fields"]:
+                st.warning(
+                    "Not found in the document: "
+                    + ", ".join(intake["missing_required_fields"])
+                    + ". Select the correct values below before continuing."
+                )
+            for warning in intake.get("warnings", []):
+                st.warning(warning)
+
+    defaults = intake if entry_mode == "Upload PDF or image" and intake else None
+    default_features = defaults["features"] if defaults else references
+    default_project = defaults["project_context"] if defaults else {}
     with st.form("assessment"):
         st.caption(
-            "For this portfolio demo, fields not shown use their training reference "
-            "value. The API still accepts every filing-time feature."
+            "Fields not shown use training reference values. Uploaded values remain "
+            "editable and are never sent to the ML model before your confirmation."
         )
         left, right = st.columns(2)
         with left:
-            project_name = st.text_input("Project name", value="Demo project")
-            needed_by = st.date_input(
-                "Permit needed by", value=date.today() + timedelta(days=45)
+            project_name = st.text_input(
+                "Project name",
+                value=default_project.get("project_name", "Demo project"),
             )
-            borough = select_value(
-                "Borough", categories["borough"], references["borough"]
+            default_needed = default_project.get("permit_needed_by")
+            try:
+                default_needed_date = date.fromisoformat(default_needed)
+            except (TypeError, ValueError):
+                default_needed_date = date.today() + timedelta(days=45)
+            needed_by = st.date_input("Permit needed by", value=default_needed_date)
+            borough = select_with_default(
+                "Borough",
+                categories["borough"],
+                default_features["borough"],
+                "one-borough",
             )
-            job_type = select_value(
-                "Job type", categories["job_type"], references["job_type"]
+            job_type = select_with_default(
+                "Job type",
+                categories["job_type"],
+                default_features["job_type"],
+                "one-job-type",
             )
-            review = select_value(
+            review = select_with_default(
                 "Review type",
                 categories["filing_review_type"],
-                references["filing_review_type"],
+                default_features["filing_review_type"],
+                "one-review-type",
             )
-            building = select_value(
+            building = select_with_default(
                 "Building type",
                 categories["building_type"],
-                references["building_type"],
+                default_features["building_type"],
+                "one-building-type",
             )
         with right:
             mitigation_owner = st.text_input(
-                "Mitigation owner", value="Project Manager"
+                "Mitigation owner",
+                value=default_project.get("mitigation_owner", "Project Manager"),
             )
             initial_cost = st.number_input(
                 "Initial cost ($)",
                 min_value=0.0,
-                value=float(references["initial_cost"] or 0),
+                value=float(default_features["initial_cost"] or 0),
             )
             floor_area = st.number_input(
                 "Construction floor area",
                 min_value=0.0,
-                value=float(references["total_construction_floor_area"] or 0),
+                value=float(default_features["total_construction_floor_area"] or 0),
             )
-            general_work = st.checkbox("General construction work", value=True)
-            plumbing_work = st.checkbox("Plumbing work")
-            mechanical_work = st.checkbox("Mechanical systems work")
-            structural_work = st.checkbox("Structural work")
+            general_work = st.checkbox(
+                "General construction work",
+                value=default_features.get("general_construction_work_type_") == "YES",
+            )
+            plumbing_work = st.checkbox(
+                "Plumbing work",
+                value=default_features.get("plumbing_work_type") == "YES",
+            )
+            mechanical_work = st.checkbox(
+                "Mechanical systems work",
+                value=default_features.get("mechanical_systems_work_type_") == "YES",
+            )
+            structural_work = st.checkbox(
+                "Structural work",
+                value=default_features.get("structural_work_type_") == "YES",
+            )
         exclude_job = st.text_input(
             "Current filing number (optional; excluded from comparables)"
         )
-        submitted = st.form_submit_button("Assess permit risk", type="primary")
+        confirmed = st.checkbox(
+            "I reviewed these inputs and confirm they are correct",
+            value=entry_mode == "Enter fields",
+        )
+        submitted = st.form_submit_button(
+            "Analyze with Permit Planning Agent", type="primary"
+        )
 
     if submitted:
-        features = dict(references)
+        if not confirmed:
+            st.error("Confirm the displayed fields before running the assessment.")
+            st.stop()
+        features = dict(default_features)
         features.update(
             {
                 "borough": borough,
@@ -479,15 +601,59 @@ if "result" not in st.session_state:
 result = st.session_state.get("result")
 if result:
     render_result(result)
+    st.subheader("Ask the Permit Planning Agent")
+    if metadata.get("gemini_configured"):
+        try:
+            chat_messages = api_get(
+                f"/api/v1/assessments/{result['thread_id']}/agent-chat",
+                {"workspace_id": workspace_id},
+            )["messages"]
+        except Exception as error:
+            chat_messages = []
+            st.error(f"Agent conversation could not be loaded: {error}")
+        if not chat_messages:
+            st.caption(
+                "Ask follow-up questions about this assessment. The conversation is "
+                "saved with this workspace and assessment."
+            )
+        for message in chat_messages:
+            with st.chat_message(message["role"]):
+                st.markdown(message["content"])
+                if message.get("tool_calls"):
+                    st.caption("Tools used: " + ", ".join(message["tool_calls"]))
+        with st.form(f"agent-chat-{result['thread_id']}", clear_on_submit=True):
+            question = st.text_input(
+                "Continue the conversation",
+                placeholder="Can I do something to lower the risk?",
+            )
+            ask_agent = st.form_submit_button("Send", type="primary")
+        if ask_agent:
+            try:
+                api_post(
+                    f"/api/v1/assessments/{result['thread_id']}/agent-question",
+                    {"workspace_id": workspace_id, "question": question},
+                )
+                st.rerun()
+            except Exception as error:
+                st.error(f"Agent question failed: {error}")
+    else:
+        st.info(
+            "Configure GOOGLE_API_KEY and restart the API to enable Gemini "
+            "tool-calling "
+            "briefings, document extraction, and grounded follow-up questions."
+        )
     if result.get("status") == "awaiting_human_review":
         st.info(
-            "Approval freezes the displayed inputs, evidence, checklist, and reviewer note "
+            "Approval freezes the displayed inputs, evidence, checklist, and reviewer "
+            "note "
             "into a downloadable PDF. Rejection creates no PDF."
         )
         note = st.text_area("Reviewer note (included in the PDF)")
         approve, reject = st.columns(2)
         decision = None
-        if approve.button("Approve & generate PDF", type="primary", use_container_width=True):
+        if approve.button(
+            "Approve & generate PDF", type="primary", use_container_width=True
+        ):
             decision = "approve"
         if reject.button("Reject - no PDF", use_container_width=True):
             decision = "reject"
@@ -525,13 +691,16 @@ if result:
                     {"workspace_id": workspace_id},
                 )
                 st.download_button(
-                    "Download Procore-ready risk draft",
+                    "Download integration-ready risk draft",
                     data=json.dumps(procore_draft, indent=2) + "\n",
-                    file_name=f"permitpulse-procore-draft-{result['thread_id'][:12]}.json",
+                    file_name=(
+                        f"permitpulse-integration-draft-{result['thread_id'][:12]}.json"
+                    ),
                     mime="application/json",
                 )
                 st.caption(
-                    "Draft integration payload only. PermitPulse does not write to Procore."
+                    "Draft integration payload only. PermitPulse performs no external "
+                    "write."
                 )
             except Exception as error:
                 st.error(f"PDF download failed: {error}")

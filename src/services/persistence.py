@@ -14,7 +14,6 @@ from dotenv import load_dotenv
 
 from src.modeling.train import ROOT
 
-
 load_dotenv()
 STATE_DATABASE_PATH = Path(
     os.getenv(
@@ -70,6 +69,97 @@ class HistoryStore:
                 "CREATE INDEX IF NOT EXISTS history_workspace_idx "
                 "ON assessment_history (workspace_id, updated_at DESC)"
             )
+            connection.execute(
+                """
+                CREATE TABLE IF NOT EXISTS agent_chat_messages (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    thread_id TEXT NOT NULL,
+                    workspace_id TEXT NOT NULL,
+                    created_at TEXT NOT NULL,
+                    role TEXT NOT NULL,
+                    content TEXT NOT NULL,
+                    tool_calls_json TEXT NOT NULL
+                )
+                """
+            )
+            connection.execute(
+                "CREATE INDEX IF NOT EXISTS agent_chat_thread_idx "
+                "ON agent_chat_messages (workspace_id, thread_id, id)"
+            )
+
+    def _assessment_exists(
+        self, connection: sqlite3.Connection, workspace_id: str, thread_id: str
+    ) -> bool:
+        row = connection.execute(
+            "SELECT 1 FROM assessment_history WHERE workspace_id = ? AND thread_id = ?",
+            (workspace_id, thread_id),
+        ).fetchone()
+        return row is not None
+
+    def append_agent_message(
+        self,
+        workspace_id: str,
+        thread_id: str,
+        role: str,
+        content: str,
+        tool_calls: list[str] | None = None,
+    ) -> None:
+        workspace_id = normalize_workspace_id(workspace_id)
+        content = content.strip()
+        if role not in {"user", "assistant"}:
+            raise ValueError("Agent chat role must be user or assistant.")
+        if not content or len(content) > 5000:
+            raise ValueError("Agent chat content must contain 1-5000 characters.")
+        with self.connect() as connection:
+            if not self._assessment_exists(connection, workspace_id, thread_id):
+                raise KeyError("Assessment was not found in this workspace.")
+            connection.execute(
+                """
+                INSERT INTO agent_chat_messages (
+                    thread_id, workspace_id, created_at, role, content, tool_calls_json
+                ) VALUES (?, ?, ?, ?, ?, ?)
+                """,
+                (
+                    thread_id,
+                    workspace_id,
+                    utc_now(),
+                    role,
+                    content,
+                    json.dumps(tool_calls or [], separators=(",", ":")),
+                ),
+            )
+
+    def list_agent_messages(
+        self, workspace_id: str, thread_id: str, limit: int = 20
+    ) -> list[dict[str, Any]]:
+        workspace_id = normalize_workspace_id(workspace_id)
+        limit = max(1, min(int(limit), 50))
+        with self.connect() as connection:
+            if not self._assessment_exists(connection, workspace_id, thread_id):
+                raise KeyError("Assessment was not found in this workspace.")
+            rows = connection.execute(
+                """
+                SELECT created_at, role, content, tool_calls_json
+                FROM (
+                    SELECT id, created_at, role, content, tool_calls_json
+                    FROM agent_chat_messages
+                    WHERE workspace_id = ? AND thread_id = ?
+                    ORDER BY id DESC
+                    LIMIT ?
+                )
+                ORDER BY id ASC
+                """,
+                (workspace_id, thread_id, limit),
+            ).fetchall()
+        return [
+            {
+                "created_at": row["created_at"],
+                "role": row["role"],
+                "content": row["content"],
+                "tool_calls": json.loads(row["tool_calls_json"]),
+            }
+            for row in rows
+        ]
 
     def create(
         self,
@@ -172,9 +262,7 @@ class HistoryStore:
                     "report_status": report.get("status", "not_generated"),
                     "project_name": project.get("project_name", "Unnamed project"),
                     "permit_needed_by": project.get("permit_needed_by"),
-                    "mitigation_owner": project.get(
-                        "mitigation_owner", "Unassigned"
-                    ),
+                    "mitigation_owner": project.get("mitigation_owner", "Unassigned"),
                     "review_status": project.get("review_status", "new"),
                 }
             )

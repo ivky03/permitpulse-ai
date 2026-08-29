@@ -2,22 +2,22 @@
 
 from __future__ import annotations
 
-from contextlib import asynccontextmanager
-from collections import defaultdict, deque
 import os
+from collections import defaultdict, deque
+from contextlib import asynccontextmanager
 from threading import Lock
 from time import monotonic
 from typing import Any
 
+from dotenv import load_dotenv
 from fastapi import FastAPI, HTTPException
 from fastapi.responses import FileResponse, JSONResponse
-from dotenv import load_dotenv
 from pydantic import BaseModel, ConfigDict, Field
 
-load_dotenv()
-
+from src.agent.intake import DocumentIntakeAgent, decode_document
 from src.agent.workflow import PermitWorkflow
 from src.data.build_dataset import MODEL_FEATURES, NUMERIC_FEATURES
+from src.services.persistence import HistoryStore, normalize_workspace_id
 from src.services.portfolio import (
     MAX_PORTFOLIO_ITEMS,
     demo_portfolio,
@@ -25,9 +25,9 @@ from src.services.portfolio import (
     portfolio_summary,
     rank_portfolio,
 )
-from src.services.persistence import HistoryStore, normalize_workspace_id
 from src.services.procore_adapter import DemoProcoreAdapter
 
+load_dotenv()
 
 PUBLIC_DEMO = os.getenv("PERMITPULSE_PUBLIC_DEMO", "false").lower() == "true"
 PUBLIC_RATE_LIMIT = int(os.getenv("PERMITPULSE_RATE_LIMIT_PER_MINUTE", "30"))
@@ -91,9 +91,23 @@ class PortfolioAssessmentRequest(BaseModel):
     )
 
 
+class DocumentIntakeRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    filename: str = Field(min_length=1, max_length=120)
+    mime_type: str
+    content_base64: str = Field(min_length=1)
+
+
+class AgentQuestionRequest(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+    workspace_id: str
+    question: str = Field(min_length=1, max_length=1000)
+
+
 def create_app(
     workflow: PermitWorkflow | None = None,
     history_store: HistoryStore | None = None,
+    intake_agent: DocumentIntakeAgent | None = None,
 ) -> FastAPI:
     runtime: dict[str, Any] = {}
 
@@ -101,6 +115,7 @@ def create_app(
     async def lifespan(_: FastAPI):
         runtime["workflow"] = workflow or PermitWorkflow()
         runtime["history"] = history_store or HistoryStore()
+        runtime["intake_agent"] = intake_agent or DocumentIntakeAgent()
         yield
         if workflow is None:
             runtime["workflow"].close()
@@ -143,6 +158,31 @@ def create_app(
             raise HTTPException(status_code=503, detail="History store is not ready.")
         return runtime["history"]
 
+    def current_metadata() -> dict[str, Any]:
+        active = current_workflow()
+        artifact = active.risk_service.artifact
+        profile = artifact["input_profile"]
+        return {
+            "features": list(MODEL_FEATURES),
+            "numeric_features": sorted(NUMERIC_FEATURES),
+            "reference_values": profile["reference_values"],
+            "categories": profile["categories"],
+            "model_name": artifact["model_name"],
+            "training_period": artifact["training_period"],
+            "target": "first permit not issued within 30 days",
+            "workspace_notice": (
+                "Workspace IDs separate demo history; they are not authentication."
+            ),
+            "public_demo": PUBLIC_DEMO,
+            "max_portfolio_items": MAX_PORTFOLIO_ITEMS,
+            "gemini_configured": bool(
+                os.getenv("GOOGLE_API_KEY") or os.getenv("GEMINI_API_KEY")
+            ),
+            "agent_mode": "gemini_tool_calling",
+            "document_types": ["application/pdf", "image/png", "image/jpeg"],
+            "max_document_mb": 8,
+        }
+
     def create_one(
         workspace_id: str,
         features: dict[str, Any],
@@ -164,23 +204,20 @@ def create_app(
 
     @app.get("/api/v1/metadata")
     def metadata() -> dict[str, Any]:
-        active = current_workflow()
-        artifact = active.risk_service.artifact
-        profile = artifact["input_profile"]
-        return {
-            "features": list(MODEL_FEATURES),
-            "numeric_features": sorted(NUMERIC_FEATURES),
-            "reference_values": profile["reference_values"],
-            "categories": profile["categories"],
-            "model_name": artifact["model_name"],
-            "training_period": artifact["training_period"],
-            "target": "first permit not issued within 30 days",
-            "workspace_notice": (
-                "Workspace IDs separate demo history; they are not authentication."
-            ),
-            "public_demo": PUBLIC_DEMO,
-            "max_portfolio_items": MAX_PORTFOLIO_ITEMS,
-        }
+        return current_metadata()
+
+    @app.post("/api/v1/agent/document-intake")
+    def document_intake(payload: DocumentIntakeRequest) -> dict[str, Any]:
+        try:
+            content = decode_document(payload.content_base64)
+            return runtime["intake_agent"].extract(
+                payload.filename,
+                payload.mime_type,
+                content,
+                current_metadata(),
+            )
+        except (ValueError, RuntimeError, FileNotFoundError) as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
 
     @app.post("/api/v1/assessments")
     def create_assessment(payload: AssessmentRequest) -> dict[str, Any]:
@@ -200,7 +237,9 @@ def create_app(
     @app.post("/api/v1/assessments/{thread_id}/decision")
     def decide(thread_id: str, payload: DecisionRequest) -> dict[str, Any]:
         if payload.decision not in {"approve", "reject"}:
-            raise HTTPException(status_code=422, detail="decision must be approve or reject")
+            raise HTTPException(
+                status_code=422, detail="decision must be approve or reject"
+            )
         try:
             workspace_id = normalize_workspace_id(payload.workspace_id)
             current_history().get(workspace_id, thread_id)
@@ -212,6 +251,52 @@ def create_app(
             current_history().update(workspace_id, result)
             return result
         except (ValueError, KeyError) as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
+
+    @app.post("/api/v1/assessments/{thread_id}/agent-question")
+    def agent_question(thread_id: str, payload: AgentQuestionRequest) -> dict[str, Any]:
+        try:
+            workspace_id = normalize_workspace_id(payload.workspace_id)
+            record = current_history().get(workspace_id, thread_id)
+            history = current_history().list_agent_messages(
+                workspace_id, thread_id, limit=8
+            )
+            answer = current_workflow().planner.answer_question(
+                record["assessment"], payload.question, history=history
+            )
+            current_history().append_agent_message(
+                workspace_id, thread_id, "user", payload.question
+            )
+            current_history().append_agent_message(
+                workspace_id,
+                thread_id,
+                "assistant",
+                answer["answer"],
+                answer["tool_calls"],
+            )
+            return {
+                **answer,
+                "messages": current_history().list_agent_messages(
+                    workspace_id, thread_id
+                ),
+            }
+        except KeyError as error:
+            raise HTTPException(status_code=404, detail=str(error)) from error
+        except (ValueError, RuntimeError) as error:
+            raise HTTPException(status_code=400, detail=str(error)) from error
+
+    @app.get("/api/v1/assessments/{thread_id}/agent-chat")
+    def agent_chat(thread_id: str, workspace_id: str) -> dict[str, Any]:
+        try:
+            return {
+                "thread_id": thread_id,
+                "messages": current_history().list_agent_messages(
+                    normalize_workspace_id(workspace_id), thread_id
+                ),
+            }
+        except KeyError as error:
+            raise HTTPException(status_code=404, detail=str(error)) from error
+        except ValueError as error:
             raise HTTPException(status_code=400, detail=str(error)) from error
 
     @app.get("/api/v1/history")
@@ -299,11 +384,18 @@ def create_app(
         except (ValueError, KeyError) as error:
             raise HTTPException(status_code=404, detail=str(error)) from error
         report = result.get("report_file", {})
-        if result.get("status") != "approved_report_ready" or report.get("status") != "ready":
-            raise HTTPException(status_code=404, detail="An approved PDF report is not available.")
+        if (
+            result.get("status") != "approved_report_ready"
+            or report.get("status") != "ready"
+        ):
+            raise HTTPException(
+                status_code=404, detail="An approved PDF report is not available."
+            )
         path = current_workflow().report_service.path_for(thread_id)
         if not path.is_file():
-            raise HTTPException(status_code=404, detail="The PDF report file is missing.")
+            raise HTTPException(
+                status_code=404, detail="The PDF report file is missing."
+            )
         return FileResponse(
             path,
             media_type="application/pdf",

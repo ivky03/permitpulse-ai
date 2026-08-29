@@ -9,11 +9,11 @@ should own the follow-up.
 
 ## Product
 
-PermitPulse ranks a small portfolio of NYC permit filings by 30-day delay risk and
-needed-by date. For each filing it shows filing-time risk factors, comparable completed
-permits, data-quality warnings, and a bounded readiness checklist. A person must approve
-before the system creates a durable PDF and a draft JSON record shaped for a future
-Procore integration.
+PermitPulse accepts one manually entered filing, a human-confirmed Gemini document
+extraction, or a small portfolio. It ranks filings by 30-day delay risk and needed-by
+date, then shows filing-time risk factors, comparable completed permits, data-quality
+warnings, and a grounded readiness briefing. A person must approve before the system
+creates a durable PDF and an integration-ready draft JSON record.
 
 ## Operational value
 
@@ -31,11 +31,11 @@ The largest measured subgroup weakness is recall: 46.2% for Professional Certifi
 versus 97.5% for Standard Plan Examination. Any production pilot should stratify or
 recalibrate this segment before using the queue to allocate scarce review capacity.
 
-## Procore relevance
+## Platform integration relevance
 
 - Portfolio view: mirrors the cross-project decisions construction teams make.
 - Risk draft: maps an approved assessment to schedule risk, owner, response strategy,
-  evidence, and follow-up actions without claiming a live integration.
+  evidence, and follow-up actions without claiming a live integration with any vendor.
 - MCP service: lets approved AI clients retrieve the same read-only intelligence through
   explicit tool contracts.
 - Auditability: freezes inputs, model context, comparables, warnings, actions, and reviewer
@@ -44,13 +44,13 @@ recalibrate this segment before using the queue to allocate scarce review capaci
 ## Non-goals
 
 PermitPulse does not predict code objections, determine compliance, contact NYC DOB,
-guarantee issuance, change a schedule, or write to Procore. Completed comparables do not
+guarantee issuance, change a schedule, or write to an external platform. Completed comparables do not
 represent unresolved filings. Model performance can drift as agency conditions change.
 
 ## Production path
 
 Replace demo workspace IDs with SSO and authorization; move SQLite/LangGraph state to a
 shared Postgres checkpointer; store reports in object storage; add project-system IDs;
-validate a Procore field mapping with sandbox access; monitor calibration, subgroup
+validate the target platform's field mapping in a sandbox; monitor calibration, subgroup
 recall, latency, and reviewer decisions; then evaluate whether interventions shorten
 schedule impact rather than merely predicting delay.

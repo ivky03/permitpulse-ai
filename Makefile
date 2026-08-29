@@ -1,4 +1,4 @@
-.PHONY: setup test dataset train index demo bundle bootstrap api ui mcp evaluate-portfolio
+.PHONY: setup test dataset train index demo bundle bootstrap api ui mcp evaluate-portfolio evaluate-agent
 
 setup:
 	python3 -m venv .venv
@@ -34,6 +34,9 @@ ui:
 
 mcp:
 	python -m src.mcp.server
+
+evaluate-agent:
+	python -m scripts.evaluate_agent
 
 evaluate-portfolio:
 	python -m src.modeling.portfolio_evaluation
