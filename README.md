@@ -487,22 +487,22 @@ Free Render filesystems are ephemeral, so assessment history and generated repor
 
 ```text
 permitpulse-ai/
-â”œâ”€â”€ src/
-â”‚   â”œâ”€â”€ agent/          # Gemini intake, grounding, and LangGraph workflow
-â”‚   â”œâ”€â”€ api/            # FastAPI application and contracts
-â”‚   â”œâ”€â”€ data/           # Socrata client, audit, cleaning, and labeling
-â”‚   â”œâ”€â”€ mcp/            # Read-only MCP server
-â”‚   â”œâ”€â”€ modeling/       # Baseline, training, evaluation, and calibration
-â”‚   â”œâ”€â”€ retrieval/      # DuckDB comparable-permit index
-â”‚   â””â”€â”€ services/       # Risk, portfolio, persistence, PDF, and adapter services
-â”œâ”€â”€ scripts/            # Runtime artifact management and live agent evaluation
-â”œâ”€â”€ tests/              # Unit, workflow, API, agent, MCP, and persistence tests
-â”œâ”€â”€ reports/            # Model card, evaluations, product brief, and stage notes
-â”œâ”€â”€ output/pdf/         # Checked-in sample approved report
-â”œâ”€â”€ ui.py               # Streamlit application
-â”œâ”€â”€ render.yaml         # Public demo Blueprint
-â”œâ”€â”€ Dockerfile
-â””â”€â”€ Makefile
+      src/
+        agent/          # Gemini intake, grounding, and LangGraph workflow
+        api/            # FastAPI application and contracts
+        data/           # Socrata client, audit, cleaning, and labeling
+        mcp/            # Read-only MCP server
+        modeling/       # Baseline, training, evaluation, and calibration
+        retrieval/      # DuckDB comparable-permit index
+        services/       # Risk, portfolio, persistence, PDF, and adapter services
+        scripts/            # Runtime artifact management and live agent evaluation
+        tests/              # Unit, workflow, API, agent, MCP, and persistence tests
+        reports/            # Model card, evaluations, product brief, and stage notes
+        output/pdf/         # Checked-in sample approved report
+        ui.py               # Streamlit application
+        render.yaml         # Public demo Blueprint
+        Dockerfile
+        Makefile
 ```
 
 ## Known limitations
