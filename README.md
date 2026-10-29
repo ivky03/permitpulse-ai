@@ -12,6 +12,12 @@ The application combines temporal machine-learning evaluation, comparable-case r
 
 ![Portfolio prioritization and calibration](reports/figures/portfolio_evaluation.png)
 
+## Optional Agent Quality Audit (LLM-as-a-Judge)
+
+A Streamlit page now lets you run the **existing Gemini evidence agent** against a saved demo assessment, manually label its real answers with reasons, and compare those labels against an independent Gemini LLM judge. It supports **runtime Gemini API keys**, optional **Langfuse v4 generation traces**, JSON goldset export/import, and agreement/false-accept analysis. No labels, results or performance statistics are invented. A real provider key is required to execute live calls.
+
+**[Setup, safe-use boundaries, and learning walkthrough](docs/agent-quality-audit.md)**. Install optional tracing support with `pip install -r requirements-audit.txt`, start the existing API and `streamlit run ui.py`, then open the **Agent Quality Audit** page.
+
 ## Why this project exists
 
 A construction project manager may be tracking several permit-dependent milestones while having time to investigate only a small number of filings. A raw probability does not solve that workflow. The user also needs to know:

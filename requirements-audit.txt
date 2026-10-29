@@ -1,0 +1,3 @@
+-r requirements.txt
+# Optional observability integration for the Agent Quality Audit page.
+langfuse>=4.7,<5
