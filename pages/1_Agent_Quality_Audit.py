@@ -63,7 +63,40 @@ api_url = st.text_input("PermitPulse API URL",
     value=os.getenv("PERMITPULSE_API_URL", "http://localhost:8000"))
 workspace = st.text_input("Demo workspace ID", value=st.session_state.get("workspace_id", ""))
 thread_id = st.text_input("Assessment thread ID")
-if st.button("Load assessment", disabled=not bool(workspace and thread_id)):
+if st.session_state.get("result") and st.button("Use the assessment currently open in PermitPulse"):
+    st.session_state.quality_assessment = st.session_state.result["assessment"]
+    st.success("Loaded assessment already displayed in this session.")
+if workspace and st.button("Find recent assessments"):
+    try:
+        configured = os.getenv("PERMITPULSE_API_URL", "http://localhost:8000").rstrip("/")
+        history = requests.get(
+            f"{configured}/api/v1/history",
+            params={"workspace_id": workspace, "limit": 20}, timeout=20,
+        )
+        history.raise_for_status()
+        st.session_state.quality_recent = history.json().get("items", [])
+    except (requests.RequestException, ValueError) as error:
+        st.error(f"Unable to fetch recent assessments: {error}")
+recent = st.session_state.get("quality_recent", [])
+if recent:
+    selected = st.selectbox("Or choose a recent assessment",
+        recent, format_func=lambda item: (
+            str(item.get("project_name") or item.get("borough") or "Permit")
+            + " · " + str(item.get("risk_level") or "unknown")
+        ))
+    if st.button("Load selected assessment"):
+        try:
+            configured = os.getenv("PERMITPULSE_API_URL", "http://localhost:8000").rstrip("/")
+            response = requests.get(
+                f"{configured}/api/v1/history/{selected['thread_id']}",
+                params={"workspace_id": workspace}, timeout=20,
+            )
+            response.raise_for_status()
+            st.session_state.quality_assessment = response.json()["assessment"]
+            st.success("Loaded saved assessment.")
+        except (requests.RequestException, KeyError, ValueError) as error:
+            st.error(f"Unable to load: {error}")
+if st.button("Load assessment by thread ID", disabled=not bool(workspace and thread_id)):
     try:
         # Only permit the configured API host: never forward credentials to this endpoint.
         configured = os.getenv("PERMITPULSE_API_URL", "http://localhost:8000").rstrip("/")
